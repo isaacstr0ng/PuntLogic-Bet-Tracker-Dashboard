@@ -36,13 +36,12 @@ nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;h
 .load-status{font-size:11px;color:var(--muted);}
 .main{padding:16px 24px;max-width:1400px;margin:0 auto;}
 .err{background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.35);border-radius:8px;padding:11px 16px;font-size:12px;color:var(--red);margin-bottom:14px;display:none;line-height:1.5;}
-/* Active filters banner */
 .filter-bar{display:none;align-items:center;gap:8px;margin-bottom:12px;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;}
 .filter-bar.active{display:flex;}
 .filter-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;}
+.filter-pill.bowler{background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3);}
 .filter-pill.tipster{background:rgba(126,87,194,.15);color:var(--purple);border:1px solid rgba(126,87,194,.3);}
 .filter-pill.activity{background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.3);}
-.filter-pill.bowler{background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3);}
 .filter-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
 .at-banner{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
 .at-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;}
@@ -114,7 +113,7 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
 <body>
 
 <div id="loadingScreen">
-  <div class="load-title" style="color:var(--purple)">PuntLogic</div>
+  <div class="load-title">PuntLogic</div>
   <div class="load-sub">EV Dashboard</div>
   <div class="load-bar-wrap"><div class="load-bar" id="loadBar"></div></div>
   <div class="load-status" id="loadStatus">Connecting to sheets...</div>
@@ -130,21 +129,18 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
   </div>
   <div class="nav-right">
     <span class="updated" id="updatedTime"></span>
-    <!-- Bowler filter -->
     <div class="nav-group">
       <span class="nav-label">Bowler</span>
       <select class="nav-select" id="bowlerSelect" onchange="setBowler(this.value)">
         <option value="All">All</option>
       </select>
     </div>
-    <!-- Tipster filter -->
     <div class="nav-group">
       <span class="nav-label">Tipster</span>
       <select class="nav-select" id="tipsterSelect" onchange="setTipster(this.value)">
         <option value="All">All</option>
       </select>
     </div>
-    <!-- Activity / Bet Type filter -->
     <div class="nav-group">
       <span class="nav-label">Bet Type</span>
       <select class="nav-select" id="activitySelect" onchange="setActivity(this.value)">
@@ -161,8 +157,6 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
 
 <div class="main">
   <div class="err" id="errMsg"></div>
-
-  <!-- Active filter pills -->
   <div class="filter-bar" id="filterBar">
     <span class="filter-lbl">Filtering:</span>
     <span class="filter-pill bowler" id="pillBowler" style="display:none"></span>
@@ -178,22 +172,10 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
   </div>
 
   <div class="ptabs">
-    <button class="ptab" onclick="setPeriod(1,this)">
-      <span class="ptab-main">DAILY</span>
-      <span class="ptab-sub" id="sub1">Last 24 hours</span>
-    </button>
-    <button class="ptab active" onclick="setPeriod(7,this)">
-      <span class="ptab-main">LAST 7 DAYS</span>
-      <span class="ptab-sub" id="sub7">—</span>
-    </button>
-    <button class="ptab" onclick="setPeriod(28,this)">
-      <span class="ptab-main">LAST 28 DAYS</span>
-      <span class="ptab-sub" id="sub28">—</span>
-    </button>
-    <button class="ptab" onclick="setPeriod(0,this)">
-      <span class="ptab-main">ALL TIME</span>
-      <span class="ptab-sub">INCEPTION</span>
-    </button>
+    <button class="ptab" onclick="setPeriod(1,this)"><span class="ptab-main">DAILY</span><span class="ptab-sub" id="sub1">Last 24 hours</span></button>
+    <button class="ptab active" onclick="setPeriod(7,this)"><span class="ptab-main">LAST 7 DAYS</span><span class="ptab-sub" id="sub7">—</span></button>
+    <button class="ptab" onclick="setPeriod(28,this)"><span class="ptab-main">LAST 28 DAYS</span><span class="ptab-sub" id="sub28">—</span></button>
+    <button class="ptab" onclick="setPeriod(0,this)"><span class="ptab-main">ALL TIME</span><span class="ptab-sub">INCEPTION</span></button>
   </div>
 
   <div class="hero">
@@ -259,13 +241,11 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
 </div>
 
 <script>
-const PROXY='https://api.allorigins.win/raw?url=';
-const BETS_URL=PROXY+encodeURIComponent('https://docs.google.com/spreadsheets/d/e/2PACX-1vTpQ9C5SaYR9-1BpOVSkil0FCvAnXNLPinnKHr0hbtnFt7g2ZKD866viNEkEYrIf-X5j7Xnk0PiuMod/pub?gid=418544041&single=true&output=csv');
-const HYP_URL=null; // Paste your Hyperbot sheet CSV URL here when ready
+const BETS_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vTpQ9C5SaYR9-1BpOVSkil0FCvAnXNLPinnKHr0hbtnFt7g2ZKD866viNEkEYrIf-X5j7Xnk0PiuMod/pub?gid=418544041&single=true&output=csv';
+const HYP_URL=null;
 
 let allBets=[],allHyp=[],period=7,tipsterFilter='All',activityFilter='All',bowlerFilter='All';
 
-// ── CSV PARSER ─────────────────────────────────────────────────────────────
 function parseCSV(raw){
   const lines=raw.trim().split('\n');
   let headerIdx=0;
@@ -294,8 +274,6 @@ function splitLine(line){
   vals.push(cur);
   return vals.map(v=>v.replace(/^"|"$/g,'').trim());
 }
-
-// ── NUMBER CLEANER ─────────────────────────────────────────────────────────
 function cleanNum(s){
   if(!s||s==='-'||s===''||s==='N/A') return 0;
   const neg=s.includes('(')||(s.trim().startsWith('-')&&s.trim().length>1);
@@ -303,8 +281,6 @@ function cleanNum(s){
   const n=parseFloat(clean);
   return isNaN(n)?0:(neg?-n:n);
 }
-
-// ── DATE HELPERS ───────────────────────────────────────────────────────────
 function parseDate(s){
   if(!s) return null;
   let m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
@@ -317,11 +293,8 @@ function cutoff(days){
   if(days===1){const d=new Date();d.setTime(d.getTime()-24*60*60*1000);return d;}
   const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-(days-1));return d;
 }
-function fmtDateShort(d){
-  return d.toLocaleDateString('en-AU',{day:'numeric',month:'short'});
-}
+function fmtDateShort(d){return d.toLocaleDateString('en-AU',{day:'numeric',month:'short'});}
 
-// ── PARSE BETS ─────────────────────────────────────────────────────────────
 function parseBets(rows){
   return rows.map(r=>({
     date:parseDate(r['DATE']||''),
@@ -336,8 +309,6 @@ function parseBets(rows){
     _raw:r
   })).filter(r=>r.date&&r.stake>0);
 }
-
-// ── PARSE HYPERBOT ─────────────────────────────────────────────────────────
 function parseHyp(rows){
   if(!rows.length) return[];
   const keys=Object.keys(rows[0]);
@@ -350,24 +321,22 @@ function parseHyp(rows){
     const pl=cleanNum(r[plKey]||'');
     const stake=cleanNum(r[stKey]||'');
     const odds=cleanNum(r[odKey]||'');
-    return{date,netCash:pl,stake,odds,unitsGained:0,tipster:'Hyperbot',activity:'Promo',result:pl>0?'w':pl<0?'l':'r'};
+    return{date,netCash:pl,stake,odds,unitsGained:0,tipster:'Hyperbot',bowler:'',activity:'Promo',result:pl>0?'w':pl<0?'l':'r'};
   }).filter(r=>r.date);
 }
 function toTitle(s){return s.toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());}
 
-// ── FILTER ─────────────────────────────────────────────────────────────────
 function filterBets(bets,days,tip,act,bowl='All'){
   const c=days>0?cutoff(days):null;
   return bets.filter(b=>{
     if(c&&b.date<c) return false;
     if(tip!=='All'&&b.tipster!==tip) return false;
     if(bowl!=='All'&&b.bowler!==bowl) return false;
-    if(act==='Promo+Bonus'){if(!['promo','bonus'].includes(b.activity.toLowerCase())) return false;}else if(act!=='All'&&b.activity.toLowerCase()!==act.toLowerCase()) return false;
+    if(act==='Promo+Bonus'){if(!['promo','bonus'].includes(b.activity.toLowerCase())) return false;}
+    else if(act!=='All'&&b.activity.toLowerCase()!==act.toLowerCase()) return false;
     return true;
   });
 }
-
-// ── STATS ──────────────────────────────────────────────────────────────────
 function calcStats(bets){
   if(!bets.length) return{turnover:0,profit:0,roi:0,units:0,bets:0,wins:0,losses:0,avgOdds:0,avgStake:0,ppb:0,strike:0};
   const to=bets.reduce((s,b)=>s+b.stake,0);
@@ -384,7 +353,6 @@ function calcStats(bets){
     strike:(wi+lo)>0?wi/(wi+lo)*100:0};
 }
 
-// ── LOAD ───────────────────────────────────────────────────────────────────
 async function loadData(){
   setLoad(0,'Connecting...');showLoad(true);showErr('');
   try{
@@ -399,8 +367,7 @@ async function loadData(){
     render();
     setLoad(100,'Done');
     await wait(300);showLoad(false);
-    document.getElementById('updatedTime').textContent=
-      'Updated '+new Date().toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('updatedTime').textContent='Updated '+new Date().toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'});
   }catch(e){
     showErr('Could not load: '+e.message);
     showLoad(false);console.error(e);
@@ -411,9 +378,7 @@ function setLoad(p,m){document.getElementById('loadBar').style.width=p+'%';docum
 function showLoad(on){document.getElementById('loadingScreen').classList.toggle('hidden',!on);}
 function showErr(m){const e=document.getElementById('errMsg');e.style.display=m?'block':'none';if(m)e.textContent=m;}
 
-// ── BUILD DROPDOWNS ────────────────────────────────────────────────────────
 function buildOptions(){
-  // Bowler dropdown — dynamic from data
   const bowls=[...new Set(allBets.map(b=>b.bowler))].filter(Boolean).sort();
   const bSel=document.getElementById('bowlerSelect');
   const prevBowl=bSel.value;
@@ -421,70 +386,36 @@ function buildOptions(){
   bowls.forEach(b=>{const o=document.createElement('option');o.value=o.textContent=b;bSel.appendChild(o);});
   if([...bSel.options].some(o=>o.value===prevBowl)) bSel.value=prevBowl;
 
-  // Tipster dropdown — dynamic from Bets sheet only (unique names)
   const tips=[...new Set(allBets.map(b=>b.tipster))].filter(Boolean).sort();
   const tSel=document.getElementById('tipsterSelect');
   const prevTip=tSel.value;
   tSel.innerHTML='<option value="All">All Tipsters</option>';
-  tips.forEach(t=>{
-    const o=document.createElement('option');
-    o.value=o.textContent=t;
-    tSel.appendChild(o);
-  });
-  // Always add Hyperbot
-  const hb=document.createElement('option');
-  hb.value=hb.textContent='Hyperbot';
-  tSel.appendChild(hb);
-  // Restore selection if still valid
+  tips.forEach(t=>{const o=document.createElement('option');o.value=o.textContent=t;tSel.appendChild(o);});
+  const hb=document.createElement('option');hb.value=hb.textContent='Hyperbot';tSel.appendChild(hb);
   if([...tSel.options].some(o=>o.value===prevTip)) tSel.value=prevTip;
-
 }
 
-// ── UPDATE FILTER PILLS ────────────────────────────────────────────────────
 function updateFilterBar(){
   const bar=document.getElementById('filterBar');
+  const pb=document.getElementById('pillBowler');
   const pt=document.getElementById('pillTipster');
   const pa=document.getElementById('pillActivity');
   const anyActive=tipsterFilter!=='All'||activityFilter!=='All'||bowlerFilter!=='All';
   bar.classList.toggle('active',anyActive);
-  const pb=document.getElementById('pillBowler');
-  if(bowlerFilter!=='All'){
-    pb.style.display='inline-flex';
-    pb.textContent='🎳 '+bowlerFilter;
-  } else {
-    pb.style.display='none';
-  }
-  if(tipsterFilter!=='All'){
-    pt.style.display='inline-flex';
-    pt.textContent='👤 '+tipsterFilter;
-  } else {
-    pt.style.display='none';
-  }
-  if(activityFilter!=='All'){
-    pa.style.display='inline-flex';
-    pa.textContent='🏷 '+activityFilter;
-  } else {
-    pa.style.display='none';
-  }
+  if(bowlerFilter!=='All'){pb.style.display='inline-flex';pb.textContent='🎳 '+bowlerFilter;}else{pb.style.display='none';}
+  if(tipsterFilter!=='All'){pt.style.display='inline-flex';pt.textContent='👤 '+tipsterFilter;}else{pt.style.display='none';}
+  if(activityFilter!=='All'){pa.style.display='inline-flex';pa.textContent='🏷 '+activityFilter;}else{pa.style.display='none';}
 }
 
-// ── RENDER ─────────────────────────────────────────────────────────────────
 function render(){
   updateFilterBar();
-
   const isHyperbot=tipsterFilter==='Hyperbot';
-
-  // Apply both filters to bets
   const bf=isHyperbot?[]:filterBets(allBets,period,tipsterFilter,activityFilter,bowlerFilter);
-  // Hyperbot: only show if tipster=All or tipster=Hyperbot; activity filter applies (Hyperbot = Promo)
   const showHyp=tipsterFilter==='All'||isHyperbot;
   const hfRaw=showHyp?filterBets(allHyp,period,'All',activityFilter):[];
-  // If activity filter is set to something other than Promo/All, Hyperbot has no matching activity
   const hf=activityFilter==='All'||activityFilter.toLowerCase()==='promo'||activityFilter==='Promo+Bonus'?hfRaw:[];
-
   const forStats=isHyperbot?hf:[...bf,...hf];
 
-  // All-time banner always shows everything (unfiltered overview)
   const atBets=filterBets(allBets,0,'All','All',bowlerFilter);
   const at=calcStats([...atBets,...allHyp]);
   setText('atProfit',fmt$(at.profit));colorEl('atProfit',at.profit);
@@ -492,14 +423,11 @@ function render(){
   setText('atTurnover',fmt$(at.turnover));
   setText('atUnits',fmtU(at.units));colorEl('atUnits',at.units);
 
-  // Period tab sub-labels
   const now=new Date();
-  const fmt=d=>fmtDateShort(d);
   document.getElementById('sub1').textContent='Last 24 hours';
-  document.getElementById('sub7').textContent=fmt(cutoff(7))+' – '+fmt(now);
-  document.getElementById('sub28').textContent=fmt(cutoff(28))+' – '+fmt(now);
+  document.getElementById('sub7').textContent=fmtDateShort(cutoff(7))+' – '+fmtDateShort(now);
+  document.getElementById('sub28').textContent=fmtDateShort(cutoff(28))+' – '+fmtDateShort(now);
 
-  // Hero
   const lbl=period===1?'DAILY':period===7?'LAST 7 DAYS':period===28?'LAST 28 DAYS':'ALL TIME';
   setText('heroLbl',lbl);
   const s=calcStats(forStats);
@@ -507,15 +435,12 @@ function render(){
   setText('heroBets',s.bets);
   setText('heroAvg',fmt$(s.avgStake));
   setText('heroStrike',fmtP(s.strike));
-
-  // 6 stat boxes
   setText('scProfit',fmt$(s.profit));colorEl('scProfit',s.profit);
   setText('scROI',fmtP(s.roi));colorEl('scROI',s.roi);
   setText('scUnits',fmtU(s.units));
   setText('scPPB',fmt$(s.ppb));colorEl('scPPB',s.ppb);
   document.getElementById('scWL').textContent=s.wins+'W  '+s.losses+'L';
   setText('scAvgOdds',s.avgOdds>1?s.avgOdds.toFixed(2)+'x':'—');
-
   setText('tblTitle','Tipster Breakdown — '+periodLabel(lbl));
   drawChart(bf,hf);
   buildMonthly([...filterBets(allBets,0,tipsterFilter,activityFilter,bowlerFilter),...(showHyp?hf:[])]);
@@ -530,75 +455,48 @@ function periodLabel(l){
   return'All Time';
 }
 
-// ── CHART ──────────────────────────────────────────────────────────────────
 function drawChart(bets,hyp){
   const all=[...bets,...hyp].filter(b=>b.date).sort((a,b)=>a.date-b.date);
   const svg=document.getElementById('chartSvg');
   svg.innerHTML='';
   const W=800,H=200,PL=60,PR=10,PT=10,PB=28;
   const cW=W-PL-PR,cH=H-PT-PB;
-
   if(all.length<2){
     const t=se('text');sa(t,{x:400,y:100,fill:'#6b7280','font-size':12,'text-anchor':'middle'});
     t.textContent='No data for this period';svg.appendChild(t);return;
   }
-
   const dayMap={};let cum=0;
-  all.forEach(b=>{
-    cum+=b.netCash;
-    const dk=b.date.toISOString().slice(0,10);
-    dayMap[dk]=cum;
-  });
-  const pts=Object.entries(dayMap).sort((a,b)=>a[0].localeCompare(b[0]))
-    .map(([dk,v])=>({d:new Date(dk+'T00:00:00'),v}));
-
+  all.forEach(b=>{cum+=b.netCash;const dk=b.date.toISOString().slice(0,10);dayMap[dk]=cum;});
+  const pts=Object.entries(dayMap).sort((a,b)=>a[0].localeCompare(b[0])).map(([dk,v])=>({d:new Date(dk+'T00:00:00'),v}));
   const vals=pts.map(p=>p.v);
   const minV=Math.min(0,...vals),maxV=Math.max(0,...vals),rng=maxV-minV||1;
   const minD=pts[0].d.getTime(),maxD=pts[pts.length-1].d.getTime(),dRng=maxD-minD||1;
   const px=d=>PL+((d.getTime()-minD)/dRng)*cW;
   const py=v=>PT+cH-((v-minV)/rng)*cH;
-
   const defs=se('defs');
-  defs.innerHTML=`<linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#3fb950" stop-opacity=".35"/>
-    <stop offset="100%" stop-color="#3fb950" stop-opacity=".02"/>
-  </linearGradient>`;
+  defs.innerHTML=`<linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3fb950" stop-opacity=".35"/><stop offset="100%" stop-color="#3fb950" stop-opacity=".02"/></linearGradient>`;
   svg.appendChild(defs);
-
   for(let i=0;i<=4;i++){
     const v=minV+(rng/4)*i,y=py(v);
     const gl=se('line');sa(gl,{x1:PL,x2:W-PR,y1:y,y2:y,stroke:'#1a2235','stroke-width':1});svg.appendChild(gl);
     const lb=se('text');sa(lb,{x:PL-6,y:y+4,fill:'#6b7280','font-size':9,'text-anchor':'end'});
     lb.textContent=Math.abs(v)>=1000?'$'+(v/1000).toFixed(1)+'k':'$'+v.toFixed(0);svg.appendChild(lb);
   }
-
   function makePath(pts){
     if(pts.length<2) return`M${px(pts[0].d)},${py(pts[0].v)}`;
     let d=`M${px(pts[0].d)},${py(pts[0].v)}`;
-    for(let i=1;i<pts.length;i++){
-      const p=pts[i-1],c=pts[i];
-      const mx=(px(p.d)+px(c.d))/2;
-      d+=` C${mx},${py(p.v)} ${mx},${py(c.v)} ${px(c.d)},${py(c.v)}`;
-    }
+    for(let i=1;i<pts.length;i++){const p=pts[i-1],c=pts[i];const mx=(px(p.d)+px(c.d))/2;d+=` C${mx},${py(p.v)} ${mx},${py(c.v)} ${px(c.d)},${py(c.v)}`;}
     return d;
   }
-
   const linePath=makePath(pts);
   const areaPath=linePath+` L${px(pts[pts.length-1].d)},${py(0)} L${px(pts[0].d)},${py(0)} Z`;
   const area=se('path');area.setAttribute('d',areaPath);area.setAttribute('fill','url(#cg)');svg.appendChild(area);
-
-  if(minV<0){
-    const zl=se('line');sa(zl,{x1:PL,x2:W-PR,y1:py(0),y2:py(0),stroke:'#2a3547','stroke-dasharray':'4,3'});svg.appendChild(zl);
-  }
-
+  if(minV<0){const zl=se('line');sa(zl,{x1:PL,x2:W-PR,y1:py(0),y2:py(0),stroke:'#2a3547','stroke-dasharray':'4,3'});svg.appendChild(zl);}
   const line=se('path');line.setAttribute('d',linePath);
   sa(line,{fill:'none',stroke:'#3fb950','stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'});
   svg.appendChild(line);
-
   const last=pts[pts.length-1];
-  const dot=se('circle');sa(dot,{cx:px(last.d),cy:py(last.v),r:4,fill:'#0a0e17',stroke:'#3fb950','stroke-width':2});
-  svg.appendChild(dot);
-
+  const dot=se('circle');sa(dot,{cx:px(last.d),cy:py(last.v),r:4,fill:'#0a0e17',stroke:'#3fb950','stroke-width':2});svg.appendChild(dot);
   const xt=Math.min(6,pts.length);
   for(let i=0;i<xt;i++){
     const idx=Math.floor(i*(pts.length-1)/(xt-1));
@@ -610,134 +508,66 @@ function drawChart(bets,hyp){
 function se(t){return document.createElementNS('http://www.w3.org/2000/svg',t);}
 function sa(el,a){Object.entries(a).forEach(([k,v])=>el.setAttribute(k,v));}
 
-// ── MONTHLY P&L ────────────────────────────────────────────────────────────
 function buildMonthly(bets){
-  const grid=document.getElementById('monthlyGrid');
-  grid.innerHTML='';
+  const grid=document.getElementById('monthlyGrid');grid.innerHTML='';
   const monthMap={};
-  bets.forEach(b=>{
-    if(!b.date) return;
-    const key=b.date.getFullYear()+'-'+String(b.date.getMonth()+1).padStart(2,'0');
-    monthMap[key]=(monthMap[key]||0)+b.netCash;
-  });
+  bets.forEach(b=>{if(!b.date)return;const key=b.date.getFullYear()+'-'+String(b.date.getMonth()+1).padStart(2,'0');monthMap[key]=(monthMap[key]||0)+b.netCash;});
   Object.entries(monthMap).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([key,val])=>{
     const[yr,mo]=key.split('-');
     const label=new Date(+yr,+mo-1,1).toLocaleDateString('en-AU',{month:'short',year:'2-digit'});
-    const cell=document.createElement('div');
-    cell.className='month-cell '+(val>=0?'pos':'neg');
-    const abs=Math.abs(val);
-    const display=abs>=1000?'$'+(val/1000).toFixed(1)+'k':fmt$(val);
+    const cell=document.createElement('div');cell.className='month-cell '+(val>=0?'pos':'neg');
+    const abs=Math.abs(val);const display=abs>=1000?'$'+(val/1000).toFixed(1)+'k':fmt$(val);
     cell.innerHTML=`<div class="month-name">${label}</div><div class="month-val">${display}</div>`;
     grid.appendChild(cell);
   });
 }
 
-// ── TIPSTER TABLE ──────────────────────────────────────────────────────────
 function buildTable(bets,hyp){
-  const tbody=document.getElementById('tblBody');
-  tbody.innerHTML='';
+  const tbody=document.getElementById('tblBody');tbody.innerHTML='';
   const tips=[...new Set(bets.map(b=>b.tipster))].sort();
   if(!tips.length&&!hyp.length){
-    tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px;">No data for this period</td></tr>';
-    return;
+    tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px;">No data for this period</td></tr>';return;
   }
   tips.map(t=>({name:t,s:calcStats(bets.filter(b=>b.tipster===t))}))
     .sort((a,b)=>b.s.turnover-a.s.turnover)
     .forEach(({name,s})=>{
       const tr=document.createElement('tr');
-      tr.innerHTML=`
-        <td>${name}</td>
-        <td class="c-purple">${fmt$(s.turnover)}</td>
-        <td>${s.bets}</td>
-        <td>${s.avgOdds>1?s.avgOdds.toFixed(2):'—'}</td>
-        <td><span class="roi-badge ${roiCls(s.roi)}">${fmtP(s.roi)}</span></td>
-        <td class="${s.units>=0?'c-green':'c-red'}">${fmtU(s.units)}</td>
-        <td class="${s.profit>=0?'c-green':'c-red'}">${fmt$(s.profit)}</td>
-        <td class="${s.ppb>=0?'c-green':'c-red'}">${fmt$(s.ppb)}</td>
-        <td>${fmtP(s.strike)}</td>`;
+      tr.innerHTML=`<td>${name}</td><td class="c-purple">${fmt$(s.turnover)}</td><td>${s.bets}</td><td>${s.avgOdds>1?s.avgOdds.toFixed(2):'—'}</td><td><span class="roi-badge ${roiCls(s.roi)}">${fmtP(s.roi)}</span></td><td class="${s.units>=0?'c-green':'c-red'}">${fmtU(s.units)}</td><td class="${s.profit>=0?'c-green':'c-red'}">${fmt$(s.profit)}</td><td class="${s.ppb>=0?'c-green':'c-red'}">${fmt$(s.ppb)}</td><td>${fmtP(s.strike)}</td>`;
       tbody.appendChild(tr);
     });
   if(hyp.length>0){
-    const div=document.createElement('tr');div.className='hb-div';
-    div.innerHTML='<td colspan="9"></td>';tbody.appendChild(div);
+    const div=document.createElement('tr');div.className='hb-div';div.innerHTML='<td colspan="9"></td>';tbody.appendChild(div);
     const hs=calcStats(hyp);
     const hr=document.createElement('tr');
-    hr.innerHTML=`
-      <td style="color:#a78bfa">⚙ Hyperbot</td>
-      <td class="c-purple">${fmt$(hs.turnover)}</td>
-      <td>${hs.bets}</td><td>—</td>
-      <td><span class="roi-badge ${roiCls(hs.roi)}">${fmtP(hs.roi)}</span></td>
-      <td class="${hs.units>=0?'c-green':'c-red'}">${fmtU(hs.units)}</td>
-      <td class="${hs.profit>=0?'c-green':'c-red'}">${fmt$(hs.profit)}</td>
-      <td class="${hs.ppb>=0?'c-green':'c-red'}">${fmt$(hs.ppb)}</td>
-      <td>${fmtP(hs.strike)}</td>`;
+    hr.innerHTML=`<td style="color:#a78bfa">⚙ Hyperbot</td><td class="c-purple">${fmt$(hs.turnover)}</td><td>${hs.bets}</td><td>—</td><td><span class="roi-badge ${roiCls(hs.roi)}">${fmtP(hs.roi)}</span></td><td class="${hs.units>=0?'c-green':'c-red'}">${fmtU(hs.units)}</td><td class="${hs.profit>=0?'c-green':'c-red'}">${fmt$(hs.profit)}</td><td class="${hs.ppb>=0?'c-green':'c-red'}">${fmt$(hs.ppb)}</td><td>${fmtP(hs.strike)}</td>`;
     tbody.appendChild(hr);
   }
 }
 
-// ── RECENT BETS FEED ───────────────────────────────────────────────────────
 function buildRecentFeed(bets,hyp){
-  const tbody=document.getElementById('recentBody');
-  tbody.innerHTML='';
-  const resulted=[...bets,...hyp]
-    .filter(b=>b.result==='w'||b.result==='1'||b.result==='l'||b.result==='2')
-    .sort((a,b)=>b.date-a.date)
-    .slice(0,10);
-
-  if(!resulted.length){
-    tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:16px;">No resulted bets yet</td></tr>';
-    return;
-  }
-
+  const tbody=document.getElementById('recentBody');tbody.innerHTML='';
+  const resulted=[...bets,...hyp].filter(b=>b.result==='w'||b.result==='1'||b.result==='l'||b.result==='2').sort((a,b)=>b.date-a.date).slice(0,10);
+  if(!resulted.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:16px;">No resulted bets yet</td></tr>';return;}
   resulted.forEach(b=>{
     const isWin=b.result==='w'||b.result==='1';
     const dateStr=b.date?b.date.toLocaleDateString('en-AU',{day:'numeric',month:'short'}):'—';
     const selection=(b._raw&&(b._raw['SELECTION']||b._raw['Selection']))||'—';
     const bookie=(b._raw&&(b._raw['BOOKIE']||b._raw['Bookie']))||'—';
-    const actBadgeColor=b.activity==='Promo'?'rgba(167,139,250,.15);color:#a78bfa':
-                        b.activity==='Bonus'?'rgba(126,87,194,.15);color:#a78bfa':
-                        'rgba(63,185,80,.15);color:#3fb950';
+    const actBadgeColor=b.activity==='Promo'?'rgba(167,139,250,.15);color:#a78bfa':'rgba(63,185,80,.15);color:#3fb950';
     const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td style="color:var(--muted);font-size:11px;">${dateStr}</td>
-      <td style="font-weight:600;">${b.tipster}</td>
-      <td><span style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;background:${actBadgeColor};">${b.activity||'—'}</span></td>
-      <td style="color:var(--dim);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${selection}</td>
-      <td style="color:var(--dim);font-size:11px;">${bookie}</td>
-      <td style="color:var(--purple);">${b.odds>0?b.odds.toFixed(2):'—'}</td>
-      <td>${fmt$(b.stake)}</td>
-      <td><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:${isWin?'rgba(63,185,80,.15)':'rgba(248,81,73,.15)'};color:${isWin?'var(--green)':'var(--red)'};">${isWin?'W':'L'}</span></td>
-      <td style="font-weight:600;color:${isWin?'var(--green)':'var(--red)'};">${fmt$(b.netCash)}</td>`;
+    tr.innerHTML=`<td style="color:var(--muted);font-size:11px;">${dateStr}</td><td style="font-weight:600;">${b.tipster}</td><td><span style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;background:${actBadgeColor};">${b.activity||'—'}</span></td><td style="color:var(--dim);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${selection}</td><td style="color:var(--dim);font-size:11px;">${bookie}</td><td style="color:var(--purple);">${b.odds>0?b.odds.toFixed(2):'—'}</td><td>${fmt$(b.stake)}</td><td><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:${isWin?'rgba(63,185,80,.15)':'rgba(248,81,73,.15)'};color:${isWin?'var(--green)':'var(--red)'};">${isWin?'W':'L'}</span></td><td style="font-weight:600;color:${isWin?'var(--green)':'var(--red)'};">${fmt$(b.netCash)}</td>`;
     tbody.appendChild(tr);
   });
-
-  if(resulted.length){
-    const ts=resulted[0].date?resulted[0].date.toLocaleDateString('en-AU',{day:'numeric',month:'short'}):'—';
-    document.getElementById('lastUpdatedFeed').textContent='Last bet: '+ts;
-  }
+  if(resulted.length){const ts=resulted[0].date?resulted[0].date.toLocaleDateString('en-AU',{day:'numeric',month:'short'}):'—';document.getElementById('lastUpdatedFeed').textContent='Last bet: '+ts;}
 }
 
-// ── HELPERS ────────────────────────────────────────────────────────────────
 function roiCls(r){return r>2?'roi-pos':r<-2?'roi-neg':'roi-neu';}
-function fmt$(n){
-  if(isNaN(n)) return'—';
-  const a=Math.abs(n);
-  const s=a>=1000?'$'+a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'$'+a.toFixed(2);
-  return n<0?'-'+s:s;
-}
+function fmt$(n){if(isNaN(n))return'—';const a=Math.abs(n);const s=a>=1000?'$'+a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'$'+a.toFixed(2);return n<0?'-'+s:s;}
 function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
 function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
 function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
-function colorEl(id,v){
-  const e=document.getElementById(id);if(!e)return;
-  e.classList.remove('c-green','c-red');
-  e.classList.add(v>=0?'c-green':'c-red');
-}
-function setPeriod(d,btn){
-  period=d;
-  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');render();
-}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+function setPeriod(d,btn){period=d;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');render();}
 function setBowler(v){bowlerFilter=v;render();}
 function setTipster(v){tipsterFilter=v;render();}
 function setActivity(v){activityFilter=v;render();}
