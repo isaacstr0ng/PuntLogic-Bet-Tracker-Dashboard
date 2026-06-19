@@ -58,6 +58,13 @@ nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;h
 .pct-bar{display:flex;align-items:center;gap:6px;}
 .pct-bar-track{flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;}
 .pct-bar-fill{height:100%;border-radius:3px;background:var(--purple);}
+.scope-toggle{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:11px;color:var(--dim);user-select:none;}
+.scope-toggle input{display:none;}
+.scope-slider{position:relative;width:34px;height:18px;background:var(--bg4);border:1px solid var(--border);border-radius:10px;transition:all .2s;flex-shrink:0;}
+.scope-slider::before{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--dim);transition:all .2s;}
+.scope-toggle input:checked + .scope-slider{background:var(--purple-dim);border-color:var(--purple);}
+.scope-toggle input:checked + .scope-slider::before{transform:translateX(16px);background:#fff;}
+.scope-txt{min-width:64px;}
 .main{padding:16px 24px;max-width:1400px;margin:0 auto;}
 .err{background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.35);border-radius:8px;padding:11px 16px;font-size:12px;color:var(--red);margin-bottom:14px;display:none;line-height:1.5;}
 .filter-bar{display:none;align-items:center;gap:8px;margin-bottom:12px;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;}
@@ -309,6 +316,7 @@ const STATUS_COLORS = {'warm':'#3fb950','semi-gubbed':'#ff8a80','gubbed':'#ef535
 let allBets=[], allHyp=[], settingsData={}, statusMap={}, bonusMap={};
 let period=7, tipsterFilter='All', activityFilter='All', bowlerFilter='All';
 let currentPanelTab='bookie';
+let matrixShowAll=false; // Bowler × Bookie: false=active accounts only, true=all accounts
 
 // ─── CSV Parsing ─────────────────────────────────────────────────
 function splitLine(line){
@@ -544,6 +552,7 @@ function renderPanelTab(tab){
   else if(tab==='bowler') body.innerHTML=renderBowlerSummary();
   else body.innerHTML=renderBowlerBookieMatrix();
 }
+function toggleMatrixScope(on){matrixShowAll=on;renderPanelTab('matrix');}
 
 function renderBookmakerSummary(){
   const map={};
@@ -619,25 +628,38 @@ function renderBowlerBookieMatrix(){
     if(!map[key]){const p=key.split('|||');map[key]={bowler:p[0],bookie:p[1],cashBal:0,bonusBal:0,pnl:0,deps:0,wits:0,mugCount:0,mugStake:0,promoCount:0,promoStake:0,status:null,statusDate:null};}
     map[key].bonusBal=v;
   });
-  // Round near-zero balances (<$5) down to zero so dormant accounts drop off
-  // the matrix until a new deposit lands (mirrors the old spreadsheet behaviour).
+  // Active-only mode rounds near-zero balances (<$5) to zero so dormant accounts
+  // drop off until a new deposit lands. "All accounts" mode shows everything,
+  // with true balances (no rounding).
   const ZERO_THRESHOLD=5;
-  Object.values(map).forEach(m=>{
-    if(Math.abs(m.cashBal)<ZERO_THRESHOLD) m.cashBal=0;
-    if(Math.abs(m.bonusBal)<ZERO_THRESHOLD) m.bonusBal=0;
-  });
-  const rows=Object.values(map).filter(m=>m.cashBal>0||m.bonusBal>0).sort((a,b)=>a.bowler.localeCompare(b.bowler)||a.bookie.localeCompare(b.bookie));
+  let rows;
+  if(matrixShowAll){
+    rows=Object.values(map);
+  }else{
+    Object.values(map).forEach(m=>{
+      if(Math.abs(m.cashBal)<ZERO_THRESHOLD) m.cashBal=0;
+      if(Math.abs(m.bonusBal)<ZERO_THRESHOLD) m.bonusBal=0;
+    });
+    rows=Object.values(map).filter(m=>m.cashBal>0||m.bonusBal>0);
+  }
+  rows.sort((a,b)=>a.bowler.localeCompare(b.bowler)||a.bookie.localeCompare(b.bookie));
   // Apply most-recent status (from the value-less status rows) to each visible account.
   rows.forEach(r=>{const sm=statusMap[`${r.bowler}|||${r.bookie}`];if(sm) r.status=sm.status;});
-  if(!rows.length) return '<div style="color:var(--muted);text-align:center;padding:30px;font-size:12px;">No active accounts found (positive balance required).</div>';
-  return`<div class="panel-section-title">${rows.length} active accounts</div>
-  <div style="display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap;">
+  const header=`<div class="panel-section-title">${rows.length} ${matrixShowAll?'accounts (all)':'active accounts'}</div>
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;flex-wrap:wrap;">
     <span style="font-size:11px;color:#3fb950;">● Warm</span>
     <span style="font-size:11px;color:#ff8a80;">● Semi-Gubbed</span>
     <span style="font-size:11px;color:#ef5350;">● Gubbed</span>
     <span style="font-size:11px;color:#b71c1c;">● Limited</span>
     <span style="font-size:11px;color:var(--muted);">● No status</span>
-  </div>
+    <label class="scope-toggle" style="margin-left:auto;" title="Active = positive balance only; All = every account">
+      <input type="checkbox" ${matrixShowAll?'checked':''} onchange="toggleMatrixScope(this.checked)">
+      <span class="scope-slider"></span>
+      <span class="scope-txt">${matrixShowAll?'All accounts':'Active only'}</span>
+    </label>
+  </div>`;
+  if(!rows.length) return header+'<div style="color:var(--muted);text-align:center;padding:30px;font-size:12px;">No accounts to show.</div>';
+  return header+`
   <div class="panel-tbl-wrap"><table class="panel-tbl"><thead><tr>
     <th>BOWLER</th><th>BOOKIE</th><th>CASH</th><th>BONUS</th><th>P&L</th>
     <th>DEP</th><th>WIT</th><th>MUG #</th><th>MUG $</th><th>RATIO #</th><th>RATIO $</th>
@@ -648,7 +670,7 @@ function renderBowlerBookieMatrix(){
     return`<tr>
       <td style="color:${nc};font-weight:600;">${r.bowler}</td>
       <td style="color:${nc};font-weight:500;">${r.bookie}</td>
-      <td class="${r.cashBal>0?'c-green':'c-red'}">${fmt$(r.cashBal)}</td>
+      <td class="${r.cashBal>0?'c-green':r.cashBal<0?'c-red':'c-dim'}">${fmt$(r.cashBal)}</td>
       <td class="${r.bonusBal>0?'c-purple':'c-dim'}">${fmt$(r.bonusBal)}</td>
       <td class="${r.pnl>=0?'c-green':'c-red'}">${fmt$(r.pnl)}</td>
       <td class="c-dim">${r.deps}</td><td class="c-dim">${r.wits}</td>
