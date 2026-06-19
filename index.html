@@ -90,6 +90,13 @@ nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;h
 .ptab-main{display:block;letter-spacing:.4px;}.ptab-sub{font-size:10px;color:var(--muted);margin-top:2px;display:block;}
 .ptab.active{color:var(--purple);border-bottom-color:var(--purple);}.ptab.active .ptab-sub{color:var(--purple);}
 .ptab:hover:not(.active){color:var(--dim);}
+.custom-range{display:none;align-items:center;gap:12px;margin:0 0 14px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;flex-wrap:wrap;}
+.custom-range.active{display:flex;}
+.custom-range label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:6px;}
+.custom-range input[type=date]{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;font-family:inherit;font-size:12px;color-scheme:dark;}
+.custom-range input[type=date]:focus{outline:none;border-color:var(--purple);}
+.custom-range button{background:var(--purple-dim);border:none;color:#fff;padding:7px 16px;border-radius:6px;font-size:12px;font-family:inherit;font-weight:500;cursor:pointer;transition:background .2s;}
+.custom-range button:hover{background:var(--purple);}
 .hero{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .hero-lbl{font-size:11px;font-weight:600;color:var(--purple);text-transform:uppercase;letter-spacing:1.5px;display:flex;align-items:center;gap:6px;margin-bottom:7px;}
 .hero-val{font-size:38px;font-weight:700;line-height:1;color:var(--purple);}
@@ -225,6 +232,14 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
     <button class="ptab active" onclick="setPeriod(7,this)"><span class="ptab-main">LAST 7 DAYS</span><span class="ptab-sub" id="sub7">—</span></button>
     <button class="ptab" onclick="setPeriod(28,this)"><span class="ptab-main">LAST 28 DAYS</span><span class="ptab-sub" id="sub28">—</span></button>
     <button class="ptab" onclick="setPeriod(0,this)"><span class="ptab-main">ALL TIME</span><span class="ptab-sub">INCEPTION</span></button>
+    <button class="ptab" id="ptabCustom" onclick="setPeriodCustom(this)"><span class="ptab-main">CUSTOM</span><span class="ptab-sub" id="subCustom">Pick a range</span></button>
+  </div>
+
+  <div class="custom-range" id="customRange">
+    <label>From <input type="date" id="customFrom"></label>
+    <label>To <input type="date" id="customTo"></label>
+    <button onclick="applyCustomRange()">Apply</button>
+    <span id="customRangeErr" style="font-size:11px;color:var(--red);display:none;">Pick both dates (From ≤ To)</span>
   </div>
 
   <div class="hero">
@@ -306,6 +321,7 @@ const STATUS_COLORS = {'warm':'#3fb950','semi-gubbed':'#ff8a80','gubbed':'#ef535
 // ─── State ───────────────────────────────────────────────────────
 let allBets=[], allHyp=[], settingsData={}, statusMap={}, bonusMap={};
 let period=7, tipsterFilter='All', activityFilter='All', bowlerFilter='All';
+let customStart=null, customEnd=null; // custom date range (when period==='custom')
 let currentPanelTab='bookie';
 let matrixShowAll=false; // Bowler × Bookie: false=active accounts only, true=all accounts
 let matrixBowlerFilter='All', matrixBookieFilter='All'; // Bowler × Bookie in-tab filters
@@ -467,9 +483,12 @@ function parseHyp(rows){
 // ─── Filtering & Stats ───────────────────────────────────────────
 function isStatBet(b){return!EXCLUDE_FROM_STATS.has(b.activity.toLowerCase());}
 function filterBets(bets,days,tip,act,bowl='All'){
-  const c=days>0?cutoff(days):null;
+  let lo=null,hi=null;
+  if(days==='custom'){lo=customStart;hi=customEnd;}
+  else if(days>0){lo=cutoff(days);}
   return bets.filter(b=>{
-    if(c&&b.date<c) return false;
+    if(lo&&b.date<lo) return false;
+    if(hi&&b.date>hi) return false;
     if(tip!=='All'&&b.tipster!==tip) return false;
     if(bowl!=='All'&&b.bowler!==bowl) return false;
     if(act!=='All'){
@@ -739,7 +758,9 @@ function render(){
   document.getElementById('sub7').textContent=fmtDateShort(cutoff(7))+' – '+fmtDateShort(now);
   document.getElementById('sub28').textContent=fmtDateShort(cutoff(28))+' – '+fmtDateShort(now);
 
-  const lbl=period===1?'DAILY':period===7?'LAST 7 DAYS':period===28?'LAST 28 DAYS':'ALL TIME';
+  let lbl,tlbl;
+  if(period==='custom'){lbl=customRangeText();tlbl=lbl;}
+  else{lbl=period===1?'DAILY':period===7?'LAST 7 DAYS':period===28?'LAST 28 DAYS':'ALL TIME';tlbl=periodLabel(lbl);}
   setText('heroLbl',lbl);
   const s=calcStats(forStats);
   setText('heroTurnover',fmt$(s.turnover));setText('heroBets',s.bets);
@@ -755,7 +776,7 @@ function render(){
   setText('scPPB',fmt$(s.ppb));colorEl('scPPB',s.ppb);
   document.getElementById('scWL').textContent=s.wins+'W  '+s.losses+'L';
   setText('scAvgOdds',s.avgOdds>1?s.avgOdds.toFixed(2)+'x':'—');
-  setText('tblTitle','Tipster Breakdown — '+periodLabel(lbl));
+  setText('tblTitle','Tipster Breakdown — '+tlbl);
   drawChart(bf,hf);
   buildMonthly([...filterBets(allBets,0,tipsterFilter,activityFilter,bowlerFilter),...(showHyp?hf:[])]);
   buildTable(bf,hf);
@@ -848,7 +869,9 @@ function buildRecentFeed(bets,hyp){
   // Hyperbot (Promo, no bowler) only shows when nothing narrows it out.
   const actAllowsHyp=activityFilter==='All'||activityFilter.toLowerCase()==='promo';
   const hsrc=(isHB||(tipsterFilter==='All'&&bowlerFilter==='All'))&&actAllowsHyp?hyp:[];
-  const all=[...bsrc,...hsrc].sort((a,b)=>b.date-a.date).slice(0,RECENT_MAX);
+  // When a custom date range is active, constrain the feed to that range.
+  const inRange=b=>period!=='custom'||(b.date>=customStart&&b.date<=customEnd);
+  const all=[...bsrc,...hsrc].filter(inRange).sort((a,b)=>b.date-a.date).slice(0,RECENT_MAX);
   if(!all.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:16px;">No bets yet</td></tr>';if(pager)pager.innerHTML='';return;}
   const totalPages=Math.ceil(all.length/RECENT_PER_PAGE);
   recentPage=Math.max(0,Math.min(recentPage,totalPages-1));
@@ -910,7 +933,32 @@ function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;
 function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
 
 // ─── Controls ─────────────────────────────────────────────────────
-function setPeriod(d,btn){period=d;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');render();}
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
 function setBowler(v){bowlerFilter=v;recentPage=0;render();}
 function setTipster(v){tipsterFilter=v;recentPage=0;render();}
 function setActivity(v){activityFilter=v;recentPage=0;render();}
