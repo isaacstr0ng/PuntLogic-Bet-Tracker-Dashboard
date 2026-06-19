@@ -65,6 +65,12 @@ nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;h
 .scope-toggle input:checked + .scope-slider{background:var(--purple-dim);border-color:var(--purple);}
 .scope-toggle input:checked + .scope-slider::before{transform:translateX(16px);background:#fff;}
 .scope-txt{min-width:64px;}
+.pager{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:14px;flex-wrap:wrap;}
+.pager button{min-width:30px;height:30px;padding:0 8px;background:var(--bg3);border:1px solid var(--border);color:var(--dim);border-radius:6px;font-size:12px;font-family:inherit;cursor:pointer;transition:all .15s;}
+.pager button:hover:not(:disabled):not(.active){border-color:var(--purple);color:var(--purple);}
+.pager button.active{background:var(--purple-dim);border-color:var(--purple);color:#fff;font-weight:600;}
+.pager button:disabled{opacity:.4;cursor:default;}
+.pager .pager-gap{color:var(--muted);padding:0 2px;}
 .main{padding:16px 24px;max-width:1400px;margin:0 auto;}
 .err{background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.35);border-radius:8px;padding:11px 16px;font-size:12px;color:var(--red);margin-bottom:14px;display:none;line-height:1.5;}
 .filter-bar{display:none;align-items:center;gap:8px;margin-bottom:12px;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;}
@@ -235,27 +241,11 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
 
   <div class="stat-grid">
     <div class="sc"><div class="sc-lbl">Profit</div><div class="sc-val c-green" id="scProfit">—</div></div>
-    <div class="sc"><div class="sc-lbl">ROI</div><div class="sc-val c-green" id="scROI">—</div></div>
+    <div class="sc"><div class="sc-lbl" id="scROIlbl">ROI</div><div class="sc-val c-green" id="scROI">—</div></div>
     <div class="sc"><div class="sc-lbl">Units Gained</div><div class="sc-val c-purple" id="scUnits">—</div></div>
     <div class="sc"><div class="sc-lbl">Profit / Bet</div><div class="sc-val c-green" id="scPPB">—</div></div>
     <div class="sc"><div class="sc-lbl">W / L</div><div class="sc-val c-dim" id="scWL">—</div></div>
     <div class="sc"><div class="sc-lbl">Avg Odds</div><div class="sc-val c-purple" id="scAvgOdds">—</div></div>
-  </div>
-
-  <div class="pending-card" id="pendingCard" style="display:none;">
-    <div class="pending-header">
-      <span class="pending-title">⏳ Pending Bets</span>
-      <span class="pending-count" id="pendingCount">0</span>
-    </div>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr>
-          <th>Date</th><th>Bowler</th><th>Tipster</th><th>Bet Type</th><th>Selection</th>
-          <th>Bookie</th><th>Odds</th><th>Stake</th>
-        </tr></thead>
-        <tbody id="pendingBody"></tbody>
-      </table>
-    </div>
   </div>
 
   <div class="chart-card">
@@ -274,7 +264,7 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
       <table>
         <thead><tr>
           <th>TIPSTER</th><th>TURNOVER</th><th>BETS</th><th>AVG ODDS</th>
-          <th>ROI</th><th>UNITS</th><th>PROFIT</th><th>P/BET</th><th>STRIKE</th>
+          <th id="thROI">ROI</th><th>UNITS</th><th>PROFIT</th><th>P/BET</th><th>STRIKE</th>
         </tr></thead>
         <tbody id="tblBody"></tbody>
       </table>
@@ -295,6 +285,7 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
         <tbody id="recentBody"></tbody>
       </table>
     </div>
+    <div class="pager" id="recentPager"></div>
   </div>
   <div style="height:30px;"></div>
 </div>
@@ -317,6 +308,8 @@ let allBets=[], allHyp=[], settingsData={}, statusMap={}, bonusMap={};
 let period=7, tipsterFilter='All', activityFilter='All', bowlerFilter='All';
 let currentPanelTab='bookie';
 let matrixShowAll=false; // Bowler × Bookie: false=active accounts only, true=all accounts
+let matrixBowlerFilter='All', matrixBookieFilter='All'; // Bowler × Bookie in-tab filters
+let recentPage=0; const RECENT_PER_PAGE=15, RECENT_MAX=150; // Recent Bets pagination
 
 // ─── CSV Parsing ─────────────────────────────────────────────────
 function splitLine(line){
@@ -553,6 +546,8 @@ function renderPanelTab(tab){
   else body.innerHTML=renderBowlerBookieMatrix();
 }
 function toggleMatrixScope(on){matrixShowAll=on;renderPanelTab('matrix');}
+function setMatrixBowler(v){matrixBowlerFilter=v;renderPanelTab('matrix');}
+function setMatrixBookie(v){matrixBookieFilter=v;renderPanelTab('matrix');}
 
 function renderBookmakerSummary(){
   const map={};
@@ -645,6 +640,13 @@ function renderBowlerBookieMatrix(){
   rows.sort((a,b)=>a.bowler.localeCompare(b.bowler)||a.bookie.localeCompare(b.bookie));
   // Apply most-recent status (from the value-less status rows) to each visible account.
   rows.forEach(r=>{const sm=statusMap[`${r.bowler}|||${r.bookie}`];if(sm) r.status=sm.status;});
+  // In-tab Bowler / Bookmaker filters (options drawn from the full account universe).
+  const allBowlers=[...new Set(Object.values(map).map(m=>m.bowler))].filter(Boolean).sort();
+  const allBookies=[...new Set(Object.values(map).map(m=>m.bookie))].filter(Boolean).sort();
+  rows=rows.filter(r=>(matrixBowlerFilter==='All'||r.bowler===matrixBowlerFilter)&&(matrixBookieFilter==='All'||r.bookie===matrixBookieFilter));
+  const opt=(v,sel,allLbl)=>`<option value="${v}" ${v===sel?'selected':''}>${v==='All'?allLbl:v}</option>`;
+  const bowlerOpts=opt('All',matrixBowlerFilter,'All Bowlers')+allBowlers.map(v=>opt(v,matrixBowlerFilter)).join('');
+  const bookieOpts=opt('All',matrixBookieFilter,'All Bookmakers')+allBookies.map(v=>opt(v,matrixBookieFilter)).join('');
   const header=`<div class="panel-section-title">${rows.length} ${matrixShowAll?'accounts (all)':'active accounts'}</div>
   <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;flex-wrap:wrap;">
     <span style="font-size:11px;color:#3fb950;">● Warm</span>
@@ -657,8 +659,12 @@ function renderBowlerBookieMatrix(){
       <span class="scope-slider"></span>
       <span class="scope-txt">${matrixShowAll?'All accounts':'Active only'}</span>
     </label>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+    <select class="nav-select" onchange="setMatrixBowler(this.value)">${bowlerOpts}</select>
+    <select class="nav-select" onchange="setMatrixBookie(this.value)">${bookieOpts}</select>
   </div>`;
-  if(!rows.length) return header+'<div style="color:var(--muted);text-align:center;padding:30px;font-size:12px;">No accounts to show.</div>';
+  if(!rows.length) return header+'<div style="color:var(--muted);text-align:center;padding:30px;font-size:12px;">No accounts match these filters.</div>';
   return header+`
   <div class="panel-tbl-wrap"><table class="panel-tbl"><thead><tr>
     <th>BOWLER</th><th>BOOKIE</th><th>CASH</th><th>BONUS</th><th>P&L</th>
@@ -739,6 +745,11 @@ function render(){
   setText('heroTurnover',fmt$(s.turnover));setText('heroBets',s.bets);
   setText('heroAvg',fmt$(s.avgStake));setText('heroStrike',fmtP(s.strike));
   setText('scProfit',fmt$(s.profit));colorEl('scProfit',s.profit);
+  // For SNR (Stake-Not-Returned) bonus bets, "ROI" is really the bonus
+  // retention/conversion rate (cash extracted ÷ bonus face value) — relabel it.
+  const snr=activityFilter==='SNR Bonus';
+  setText('scROIlbl',snr?'Retention':'ROI');
+  setText('thROI',snr?'RETENTION':'ROI');
   setText('scROI',fmtP(s.roi));colorEl('scROI',s.roi);
   setText('scUnits',fmtU(s.units));
   setText('scPPB',fmt$(s.ppb));colorEl('scPPB',s.ppb);
@@ -748,7 +759,6 @@ function render(){
   drawChart(bf,hf);
   buildMonthly([...filterBets(allBets,0,tipsterFilter,activityFilter,bowlerFilter),...(showHyp?hf:[])]);
   buildTable(bf,hf);
-  buildPendingBets();
   buildRecentFeed(allBets,allHyp);
 }
 function periodLabel(l){
@@ -756,32 +766,6 @@ function periodLabel(l){
   if(l==='LAST 7 DAYS') return'Last 7 Days';
   if(l==='LAST 28 DAYS') return'Last 28 Days';
   return'All Time';
-}
-
-// ─── Pending Bets ────────────────────────────────────────────────
-function buildPendingBets(){
-  const pending=allBets.filter(b=>b.pending&&isStatBet(b)&&b.stake>0).sort((a,b)=>b.date-a.date);
-  const card=document.getElementById('pendingCard');
-  card.style.display=pending.length?'block':'none';
-  if(!pending.length) return;
-  document.getElementById('pendingCount').textContent=pending.length+' bets';
-  const tbody=document.getElementById('pendingBody');tbody.innerHTML='';
-  pending.slice(0,20).forEach(b=>{
-    const ds=b.date?b.date.toLocaleDateString('en-AU',{day:'numeric',month:'short'}):'—';
-    const sel=(b._raw&&(b._raw['SELECTION']||b._raw['Selection']))||'—';
-    const al=b.activity.toLowerCase();
-    const ac=al==='promo'||al==='qualifying'?'rgba(167,139,250,.15);color:#a78bfa':al==='non-promo'?'rgba(63,185,80,.15);color:#3fb950':'rgba(240,165,0,.15);color:#f0a500';
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td style="color:var(--muted);font-size:11px;">${ds}</td>
-      <td style="color:var(--dim)">${b.bowler||'—'}</td>
-      <td style="font-weight:600">${b.tipster}</td>
-      <td><span style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;background:${ac};">${b.activity||'—'}</span></td>
-      <td style="color:var(--dim);max-width:160px;overflow:hidden;text-overflow:ellipsis;">${sel}</td>
-      <td style="color:var(--dim);font-size:11px">${b.bookie||'—'}</td>
-      <td style="color:var(--purple)">${b.odds>1?b.odds.toFixed(2):'—'}</td>
-      <td style="font-weight:600;color:#f0a500">${fmt$(b.stake)}</td>`;
-    tbody.appendChild(tr);
-  });
 }
 
 // ─── Chart ───────────────────────────────────────────────────────
@@ -850,8 +834,25 @@ function buildTable(bets,hyp){
 // ─── Recent Bets Feed ─────────────────────────────────────────────
 function buildRecentFeed(bets,hyp){
   const tbody=document.getElementById('recentBody');tbody.innerHTML='';
-  const recent=[...bets.filter(b=>isStatBet(b)&&b.stake>0),...hyp].sort((a,b)=>b.date-a.date).slice(0,12);
-  if(!recent.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:16px;">No bets yet</td></tr>';return;}
+  const pager=document.getElementById('recentPager');
+  // Respect the selected Bowler / Tipster / Bet Type filters.
+  const isHB=tipsterFilter==='Hyperbot';
+  const actMatch=b=>{
+    if(activityFilter==='All') return true;
+    const al=activityFilter.toLowerCase(),bl=b.activity.toLowerCase();
+    return al==='promo'?PROMO_FILTER_ACTS.has(bl):bl===al;
+  };
+  const bsrc=isHB?[]:bets.filter(b=>isStatBet(b)&&b.stake>0&&actMatch(b)
+    &&(bowlerFilter==='All'||b.bowler===bowlerFilter)
+    &&(tipsterFilter==='All'||b.tipster===tipsterFilter));
+  // Hyperbot (Promo, no bowler) only shows when nothing narrows it out.
+  const actAllowsHyp=activityFilter==='All'||activityFilter.toLowerCase()==='promo';
+  const hsrc=(isHB||(tipsterFilter==='All'&&bowlerFilter==='All'))&&actAllowsHyp?hyp:[];
+  const all=[...bsrc,...hsrc].sort((a,b)=>b.date-a.date).slice(0,RECENT_MAX);
+  if(!all.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:16px;">No bets yet</td></tr>';if(pager)pager.innerHTML='';return;}
+  const totalPages=Math.ceil(all.length/RECENT_PER_PAGE);
+  recentPage=Math.max(0,Math.min(recentPage,totalPages-1));
+  const recent=all.slice(recentPage*RECENT_PER_PAGE,(recentPage+1)*RECENT_PER_PAGE);
   recent.forEach(b=>{
     const isWin=b.result==='w'||b.result==='1',isLoss=b.result==='l'||b.result==='2';
     const ds=b.date?b.date.toLocaleDateString('en-AU',{day:'numeric',month:'short'}):'—';
@@ -870,8 +871,35 @@ function buildRecentFeed(bets,hyp){
     tr.innerHTML=`<td style="color:var(--muted);font-size:11px;">${ds}</td><td style="font-weight:600;">${b.tipster}</td><td><span style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;background:${ac};">${b.activity||'—'}</span></td><td style="color:var(--dim);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${sel}</td><td style="color:var(--dim);font-size:11px;">${bk}</td><td style="color:var(--purple);">${b.odds>0?b.odds.toFixed(2):'—'}</td><td>${fmt$(b.stake)}</td><td>${rh}</td><td style="font-weight:600;color:${plColor};">${plText}</td>`;
     tbody.appendChild(tr);
   });
-  if(recent.length){const ts=recent[0].date?recent[0].date.toLocaleDateString('en-AU',{day:'numeric',month:'short'}):'—';document.getElementById('lastUpdatedFeed').textContent='Last bet: '+ts;}
+  const ts=all[0].date?all[0].date.toLocaleDateString('en-AU',{day:'numeric',month:'short'}):'—';
+  document.getElementById('lastUpdatedFeed').textContent='Last bet: '+ts;
+  renderRecentPager(totalPages);
 }
+function renderRecentPager(totalPages){
+  const pager=document.getElementById('recentPager');if(!pager)return;
+  if(totalPages<=1){pager.innerHTML='';return;}
+  const cur=recentPage;
+  let html=`<button ${cur===0?'disabled':''} onclick="setRecentPage(${cur-1})">‹</button>`;
+  pageWindow(cur,totalPages).forEach(p=>{
+    if(p==='gap') html+='<span class="pager-gap">…</span>';
+    else html+=`<button class="${p===cur?'active':''}" onclick="setRecentPage(${p})">${p+1}</button>`;
+  });
+  html+=`<button ${cur===totalPages-1?'disabled':''} onclick="setRecentPage(${cur+1})">›</button>`;
+  pager.innerHTML=html;
+}
+function pageWindow(cur,total){
+  if(total<=7) return [...Array(total).keys()];
+  let start=Math.max(1,cur-1),end=Math.min(total-2,cur+1);
+  if(cur<=2){start=1;end=3;}
+  if(cur>=total-3){start=total-4;end=total-2;}
+  const out=[0];
+  if(start>1) out.push('gap');
+  for(let i=start;i<=end;i++) out.push(i);
+  if(end<total-2) out.push('gap');
+  out.push(total-1);
+  return out;
+}
+function setRecentPage(p){recentPage=p;buildRecentFeed(allBets,allHyp);}
 
 // ─── Formatters ───────────────────────────────────────────────────
 function roiCls(r){return r>2?'roi-pos':r<-2?'roi-neg':'roi-neu';}
@@ -883,9 +911,9 @@ function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classL
 
 // ─── Controls ─────────────────────────────────────────────────────
 function setPeriod(d,btn){period=d;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');render();}
-function setBowler(v){bowlerFilter=v;render();}
-function setTipster(v){tipsterFilter=v;render();}
-function setActivity(v){activityFilter=v;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setActivity(v){activityFilter=v;recentPage=0;render();}
 
 loadData();
 </script>
