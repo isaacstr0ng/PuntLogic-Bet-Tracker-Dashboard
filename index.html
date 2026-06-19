@@ -182,11 +182,9 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
         <option value="Promo">Promo (incl. Qualifying)</option>
         <option value="Qualifying">Qualifying only</option>
         <option value="Mug">Mug</option>
-        <option value="Bonus">Bonus</option>
         <option value="Arb">Arb</option>
         <option value="Middle">Middle</option>
         <option value="SNR Bonus">SNR Bonus</option>
-        <option value="SR Bonus">SR Bonus</option>
       </select>
     </div>
     <button class="summary-btn" onclick="openPanel()">📊 Summary Statistics</button>
@@ -308,7 +306,7 @@ const EXCLUDE_FROM_STATS = new Set(['deposit','withdrawal']);
 const STATUS_COLORS = {'warm':'#3fb950','semi-gubbed':'#ff8a80','gubbed':'#ef5350','limited':'#b71c1c'};
 
 // ─── State ───────────────────────────────────────────────────────
-let allBets=[], allHyp=[], settingsData={};
+let allBets=[], allHyp=[], settingsData={}, statusMap={}, bonusMap={};
 let period=7, tipsterFilter='All', activityFilter='All', bowlerFilter='All';
 let currentPanelTab='bookie';
 
@@ -405,6 +403,52 @@ function parseBets(rows){
     };
   }).filter(r=>r.date&&(r.stake>0||Math.abs(r.netCash)>0||Math.abs(r.netBonus)>0));
 }
+// Status rows (Warm/Semi-Gubbed/Gubbed/Limited) carry no money, so parseBets
+// filters them out. Build a separate per bowler+bookie status lookup straight
+// from the raw rows — most recent date wins.
+function parseStatuses(rows){
+  const map={};
+  rows.forEach(r=>{
+    const a=(r['ACTIVITY']||'').trim().toLowerCase();
+    if(!STATUS_COLORS[a]) return;
+    const bowler=toTitle((r['BOWLER']||'').trim());
+    const bookie=(r['BOOKIE']||'').trim();
+    if(!bowler||!bookie) return;
+    const d=parseDate(r['DATE']||'');
+    const key=`${bowler}|||${bookie}`;
+    if(!map[key]||(d&&(!map[key].date||d>=map[key].date))) map[key]={status:a,date:d};
+  });
+  return map;
+}
+// The sheet has no "NET BONUS" column — bonus movements live in the (rounded)
+// "Bonus Bal Δ" column. We recompute the true bonus balance per bowler+bookie
+// straight from the full-precision STAKE column, mirroring the sheet's own rule:
+//   Bonus Credit            → + stake (signed; negatives write bonus off)
+//   any settled SNR Bonus   → − stake (W / L / Bonus / 1 / 2; voids = 0)
+//   result "Bonus" (a won
+//     bonus, non-deposit)   → + stake
+// Kept separate from allBets so it never touches the P&L stat pipeline.
+const BONUS_SETTLED=new Set(['w','l','bonus','1','2']);
+function parseBonusBalances(rows){
+  const map={};
+  rows.forEach(r=>{
+    const act=(r['ACTIVITY']||'').trim().toLowerCase();
+    const res=(r['RESULT']||'').trim().toLowerCase();
+    const bowler=toTitle((r['BOWLER']||'').trim());
+    const bookie=(r['BOOKIE']||'').trim();
+    if(!bowler||!bookie) return;
+    const stake=cleanNum(r['STAKE']||'');
+    let d=0;
+    if(act==='bonus credit') d=stake;
+    else if(act==='deposit'||act==='withdrawal') d=0;
+    else if(act==='snr bonus') d=BONUS_SETTLED.has(res)?-stake:0;
+    else if(res==='bonus') d=stake;
+    if(!d) return;
+    const key=`${bowler}|||${bookie}`;
+    map[key]=Math.round(((map[key]||0)+d)*100)/100;
+  });
+  return map;
+}
 function parseHyp(rows){
   if(!rows.length) return[];
   const keys=Object.keys(rows[0]);
@@ -459,7 +503,10 @@ async function loadData(){
     const sRaw=SETTINGS_URL!==BETS_URL?await fetch(SETTINGS_URL).then(r=>r.ok?r.text():null).catch(()=>null):bRaw;
     const hRaw=HYP_URL?await fetch(HYP_URL).then(r=>r.ok?r.text():null).catch(()=>null):null;
     setLoad(65,'Parsing...');
-    allBets=parseBets(parseCSV(bRaw));
+    const betRows=parseCSV(bRaw);
+    allBets=parseBets(betRows);
+    statusMap=parseStatuses(betRows);
+    bonusMap=parseBonusBalances(betRows);
     allHyp=hRaw?parseHyp(parseCSV(hRaw)):[];
     settingsData=sRaw?parseSettings(sRaw):{};
     setLoad(85,'Rendering...');
@@ -506,8 +553,10 @@ function renderBookmakerSummary(){
     const m=map[b.bookie],a=b.activity.toLowerCase();
     if(a==='deposit'){m.deps++;m.cashBal+=b.stake;}
     else if(a==='withdrawal'){m.wits++;m.cashBal-=b.stake;}
-    else{m.cashBal+=b.netCash;m.bonusBal+=b.netBonus;if(isStatBet(b)){m.pnl+=b.netCash;m.bets++;}}
+    else{m.cashBal+=b.netCash;if(isStatBet(b)){m.pnl+=b.netCash;m.bets++;}}
   });
+  // Bonus balance comes from the precise bonusMap, aggregated per bookie.
+  Object.entries(bonusMap).forEach(([k,v])=>{const bk=k.split('|||')[1];if(map[bk]) map[bk].bonusBal+=v;});
   const rows=Object.entries(map).map(([bk,d])=>({bk,...d})).sort((a,b)=>b.cashBal-a.cashBal);
   if(!rows.length) return '<div style="color:var(--muted);text-align:center;padding:30px;font-size:12px;">No data loaded yet.</div>';
   const tc=rows.reduce((s,r)=>s+r.cashBal,0),tb=rows.reduce((s,r)=>s+r.bonusBal,0);
@@ -531,8 +580,10 @@ function renderBowlerSummary(){
     const m=map[key],a=b.activity.toLowerCase();
     if(a==='deposit'){m.deps++;m.cashBal+=b.stake;}
     else if(a==='withdrawal'){m.wits++;m.cashBal-=b.stake;}
-    else{m.cashBal+=b.netCash;m.bonusBal+=b.netBonus;if(isStatBet(b)){m.pnl+=b.netCash;m.bets++;}}
+    else{m.cashBal+=b.netCash;if(isStatBet(b)){m.pnl+=b.netCash;m.bets++;}}
   });
+  // Bonus balance comes from the precise bonusMap, aggregated per bowler.
+  Object.entries(bonusMap).forEach(([k,v])=>{const bw=k.split('|||')[0]||'Unknown';if(map[bw]) map[bw].bonusBal+=v;});
   const rows=Object.entries(map).map(([bw,d])=>({bw,...d})).sort((a,b)=>b.cashBal-a.cashBal);
   if(!rows.length) return '<div style="color:var(--muted);text-align:center;padding:30px;font-size:12px;">No data loaded yet.</div>';
   const tc=rows.reduce((s,r)=>s+r.cashBal,0),tb=rows.reduce((s,r)=>s+r.bonusBal,0);
@@ -555,16 +606,29 @@ function renderBowlerBookieMatrix(){
     const key=`${b.bowler}|||${b.bookie}`;
     if(!map[key]) map[key]={bowler:b.bowler,bookie:b.bookie,cashBal:0,bonusBal:0,pnl:0,deps:0,wits:0,mugCount:0,mugStake:0,promoCount:0,promoStake:0,status:null,statusDate:null};
     const m=map[key],a=b.activity.toLowerCase();
-    if(STATUS_COLORS[a]&&(!m.statusDate||b.date>m.statusDate)){m.status=a;m.statusDate=b.date;}
     if(a==='deposit'){m.deps++;m.cashBal+=b.stake;}
     else if(a==='withdrawal'){m.wits++;m.cashBal-=b.stake;}
     else{
-      m.cashBal+=b.netCash;m.bonusBal+=b.netBonus;
+      m.cashBal+=b.netCash;
       if(isStatBet(b)) m.pnl+=b.netCash;
       if(!ACCOUNT_ACTS.has(a)){m.promoCount++;m.promoStake+=b.stake;if(a==='mug'){m.mugCount++;m.mugStake+=b.stake;}}
     }
   });
+  // Bonus balance comes from the precise bonusMap. Add bonus-only accounts too.
+  Object.entries(bonusMap).forEach(([key,v])=>{
+    if(!map[key]){const p=key.split('|||');map[key]={bowler:p[0],bookie:p[1],cashBal:0,bonusBal:0,pnl:0,deps:0,wits:0,mugCount:0,mugStake:0,promoCount:0,promoStake:0,status:null,statusDate:null};}
+    map[key].bonusBal=v;
+  });
+  // Round near-zero balances (<$5) down to zero so dormant accounts drop off
+  // the matrix until a new deposit lands (mirrors the old spreadsheet behaviour).
+  const ZERO_THRESHOLD=5;
+  Object.values(map).forEach(m=>{
+    if(Math.abs(m.cashBal)<ZERO_THRESHOLD) m.cashBal=0;
+    if(Math.abs(m.bonusBal)<ZERO_THRESHOLD) m.bonusBal=0;
+  });
   const rows=Object.values(map).filter(m=>m.cashBal>0||m.bonusBal>0).sort((a,b)=>a.bowler.localeCompare(b.bowler)||a.bookie.localeCompare(b.bookie));
+  // Apply most-recent status (from the value-less status rows) to each visible account.
+  rows.forEach(r=>{const sm=statusMap[`${r.bowler}|||${r.bookie}`];if(sm) r.status=sm.status;});
   if(!rows.length) return '<div style="color:var(--muted);text-align:center;padding:30px;font-size:12px;">No active accounts found (positive balance required).</div>';
   return`<div class="panel-section-title">${rows.length} active accounts</div>
   <div style="display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap;">
