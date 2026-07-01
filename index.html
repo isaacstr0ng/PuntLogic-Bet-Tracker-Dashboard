@@ -76,8 +76,10 @@ nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;h
 .filter-bar{display:none;align-items:center;gap:8px;margin-bottom:12px;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;}
 .filter-bar.active{display:flex;}
 .filter-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;}
+.filter-pill.bookie{background:rgba(56,189,248,.15);color:#38bdf8;border:1px solid rgba(56,189,248,.3);}
 .filter-pill.bowler{background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3);}
 .filter-pill.tipster{background:rgba(126,87,194,.15);color:var(--purple);border:1px solid rgba(126,87,194,.3);}
+.filter-pill.sport{background:rgba(240,165,0,.15);color:#f0a500;border:1px solid rgba(240,165,0,.3);}
 .filter-pill.activity{background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.3);}
 .filter-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
 .at-banner{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
@@ -183,6 +185,12 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
   <div class="nav-right">
     <span class="updated" id="updatedTime"></span>
     <div class="nav-group">
+      <span class="nav-label">Bookie</span>
+      <select class="nav-select" id="bookieSelect" onchange="setBookie(this.value)">
+        <option value="All">All Bookies</option>
+      </select>
+    </div>
+    <div class="nav-group">
       <span class="nav-label">Bowler</span>
       <select class="nav-select" id="bowlerSelect" onchange="setBowler(this.value)">
         <option value="All">All Bowlers</option>
@@ -192,6 +200,12 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
       <span class="nav-label">Tipster</span>
       <select class="nav-select" id="tipsterSelect" onchange="setTipster(this.value)">
         <option value="All">All Tipsters</option>
+      </select>
+    </div>
+    <div class="nav-group">
+      <span class="nav-label">Sport</span>
+      <select class="nav-select" id="sportSelect" onchange="setSport(this.value)">
+        <option value="All">All Sports</option>
       </select>
     </div>
     <div class="nav-group">
@@ -215,8 +229,10 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
   <div class="err" id="errMsg"></div>
   <div class="filter-bar" id="filterBar">
     <span class="filter-lbl">Filtering:</span>
+    <span class="filter-pill bookie" id="pillBookie" style="display:none"></span>
     <span class="filter-pill bowler" id="pillBowler" style="display:none"></span>
     <span class="filter-pill tipster" id="pillTipster" style="display:none"></span>
+    <span class="filter-pill sport" id="pillSport" style="display:none"></span>
     <span class="filter-pill activity" id="pillActivity" style="display:none"></span>
   </div>
 
@@ -320,11 +336,12 @@ const STATUS_COLORS = {'warm':'#3fb950','semi-gubbed':'#ff8a80','gubbed':'#ef535
 
 // ─── State ───────────────────────────────────────────────────────
 let allBets=[], allHyp=[], settingsData={}, statusMap={}, bonusMap={};
-let period=7, tipsterFilter='All', activityFilter='All', bowlerFilter='All';
+let period=7, tipsterFilter='All', activityFilter='All', bowlerFilter='All', sportFilter='All', bookieFilter='All';
 let customStart=null, customEnd=null; // custom date range (when period==='custom')
 let currentPanelTab='bookie';
 let matrixShowAll=false; // Bowler × Bookie: false=active accounts only, true=all accounts
 let matrixBowlerFilter='All', matrixBookieFilter='All'; // Bowler × Bookie in-tab filters
+let matrixCashSort=null; // null=neutral, 'asc'=low→high, 'desc'=high→low
 let recentPage=0; const RECENT_PER_PAGE=15, RECENT_MAX=150; // Recent Bets pagination
 
 // ─── CSV Parsing ─────────────────────────────────────────────────
@@ -416,6 +433,7 @@ function parseBets(rows){
       tipster:toTitle((r['TIPSTER']||'Unknown').trim()),
       bowler:toTitle((r['BOWLER']||'').trim()),
       bookie:(r['BOOKIE']||'').trim(),
+      sport:(r['SPORT']||'').trim(),
       _raw:r
     };
   }).filter(r=>r.date&&(r.stake>0||Math.abs(r.netCash)>0||Math.abs(r.netBonus)>0));
@@ -482,7 +500,7 @@ function parseHyp(rows){
 
 // ─── Filtering & Stats ───────────────────────────────────────────
 function isStatBet(b){return!EXCLUDE_FROM_STATS.has(b.activity.toLowerCase());}
-function filterBets(bets,days,tip,act,bowl='All'){
+function filterBets(bets,days,tip,act,bowl='All',sport='All',bk='All'){
   let lo=null,hi=null;
   if(days==='custom'){lo=customStart;hi=customEnd;}
   else if(days>0){lo=cutoff(days);}
@@ -491,6 +509,8 @@ function filterBets(bets,days,tip,act,bowl='All'){
     if(hi&&b.date>hi) return false;
     if(tip!=='All'&&b.tipster!==tip) return false;
     if(bowl!=='All'&&b.bowler!==bowl) return false;
+    if(sport!=='All'&&b.sport!==sport) return false;
+    if(bk!=='All'&&b.bookie!==bk) return false;
     if(act!=='All'){
       const al=act.toLowerCase(),bl=b.activity.toLowerCase();
       if(al==='promo'){if(!PROMO_FILTER_ACTS.has(bl)) return false;}
@@ -656,7 +676,9 @@ function renderBowlerBookieMatrix(){
     });
     rows=Object.values(map).filter(m=>m.cashBal>0||m.bonusBal>0);
   }
-  rows.sort((a,b)=>a.bowler.localeCompare(b.bowler)||a.bookie.localeCompare(b.bookie));
+  if(matrixCashSort==='asc') rows.sort((a,b)=>a.cashBal-b.cashBal);
+  else if(matrixCashSort==='desc') rows.sort((a,b)=>b.cashBal-a.cashBal);
+  else rows.sort((a,b)=>a.bowler.localeCompare(b.bowler)||a.bookie.localeCompare(b.bookie));
   // Apply most-recent status (from the value-less status rows) to each visible account.
   rows.forEach(r=>{const sm=statusMap[`${r.bowler}|||${r.bookie}`];if(sm) r.status=sm.status;});
   // In-tab Bowler / Bookmaker filters (options drawn from the full account universe).
@@ -684,9 +706,11 @@ function renderBowlerBookieMatrix(){
     <select class="nav-select" onchange="setMatrixBookie(this.value)">${bookieOpts}</select>
   </div>`;
   if(!rows.length) return header+'<div style="color:var(--muted);text-align:center;padding:30px;font-size:12px;">No accounts match these filters.</div>';
+  const cashIcon=matrixCashSort===null?'⇅':matrixCashSort==='asc'?'↑':'↓';
+  const cashColor=matrixCashSort===null?'var(--muted)':'var(--purple)';
   return header+`
   <div class="panel-tbl-wrap"><table class="panel-tbl"><thead><tr>
-    <th>BOWLER</th><th>BOOKIE</th><th>CASH</th><th>BONUS</th><th>P&L</th>
+    <th>BOWLER</th><th>BOOKIE</th><th><button onclick="cycleMatrixCashSort()" title="Sort by cash" style="background:none;border:none;cursor:pointer;font:inherit;text-transform:uppercase;letter-spacing:.7px;font-size:10px;font-weight:500;color:var(--muted);display:inline-flex;align-items:center;gap:4px;padding:0;white-space:nowrap;">CASH <span style="color:${cashColor};font-size:11px;">${cashIcon}</span></button></th><th>BONUS</th><th>P&L</th>
     <th>DEP</th><th>WIT</th><th>MUG #</th><th>MUG $</th><th>RATIO #</th><th>RATIO $</th>
   </tr></thead><tbody>${rows.map(r=>{
     const rN=r.promoCount>0?r.mugCount/r.promoCount*100:0;
@@ -722,15 +746,30 @@ function buildOptions(){
   tips.forEach(t=>{const o=document.createElement('option');o.value=o.textContent=t;tSel.appendChild(o);});
   if(!tips.map(t=>t.toLowerCase()).includes('hyperbot')){const h=document.createElement('option');h.value=h.textContent='Hyperbot';tSel.appendChild(h);}
   if([...tSel.options].some(o=>o.value===prevT)) tSel.value=prevT;
+
+  const sSports=settingsData['SPORTS']||[];
+  const sports=sSports.length?sSports:[...new Set(allBets.map(b=>b.sport))].filter(Boolean).sort();
+  const spSel=document.getElementById('sportSelect'),prevSp=spSel.value;
+  spSel.innerHTML='<option value="All">All Sports</option>';
+  sports.forEach(sp=>{const o=document.createElement('option');o.value=o.textContent=sp;spSel.appendChild(o);});
+  if([...spSel.options].some(o=>o.value===prevSp)) spSel.value=prevSp;
+
+  const bookies=[...new Set(allBets.map(b=>b.bookie))].filter(Boolean).sort();
+  const bkSel=document.getElementById('bookieSelect'),prevBk=bkSel.value;
+  bkSel.innerHTML='<option value="All">All Bookies</option>';
+  bookies.forEach(bk=>{const o=document.createElement('option');o.value=o.textContent=bk;bkSel.appendChild(o);});
+  if([...bkSel.options].some(o=>o.value===prevBk)) bkSel.value=prevBk;
 }
 
 // ─── Filter Pill ─────────────────────────────────────────────────
 function updateFilterBar(){
   const bar=document.getElementById('filterBar');
-  const pb=document.getElementById('pillBowler'),pt=document.getElementById('pillTipster'),pa=document.getElementById('pillActivity');
-  bar.classList.toggle('active',bowlerFilter!=='All'||tipsterFilter!=='All'||activityFilter!=='All');
+  const pbk=document.getElementById('pillBookie'),pb=document.getElementById('pillBowler'),pt=document.getElementById('pillTipster'),psp=document.getElementById('pillSport'),pa=document.getElementById('pillActivity');
+  bar.classList.toggle('active',bookieFilter!=='All'||bowlerFilter!=='All'||tipsterFilter!=='All'||sportFilter!=='All'||activityFilter!=='All');
+  if(bookieFilter!=='All'){pbk.style.display='inline-flex';pbk.textContent='🏠 '+bookieFilter;}else pbk.style.display='none';
   if(bowlerFilter!=='All'){pb.style.display='inline-flex';pb.textContent='🎳 '+bowlerFilter;}else pb.style.display='none';
   if(tipsterFilter!=='All'){pt.style.display='inline-flex';pt.textContent='👤 '+tipsterFilter;}else pt.style.display='none';
+  if(sportFilter!=='All'){psp.style.display='inline-flex';psp.textContent='🏆 '+sportFilter;}else psp.style.display='none';
   if(activityFilter!=='All'){pa.style.display='inline-flex';pa.textContent='🏷 '+activityFilter;}else pa.style.display='none';
 }
 
@@ -738,14 +777,14 @@ function updateFilterBar(){
 function render(){
   updateFilterBar();
   const isHB=tipsterFilter==='Hyperbot';
-  const bf=isHB?[]:filterBets(allBets,period,tipsterFilter,activityFilter,bowlerFilter);
+  const bf=isHB?[]:filterBets(allBets,period,tipsterFilter,activityFilter,bowlerFilter,sportFilter,bookieFilter);
   const showHyp=tipsterFilter==='All'||isHB;
-  const hfRaw=showHyp?filterBets(allHyp,period,'All',activityFilter):[];
+  const hfRaw=showHyp?filterBets(allHyp,period,'All',activityFilter,'All',sportFilter):[];
   const hf=activityFilter==='All'||activityFilter.toLowerCase()==='promo'?hfRaw:[];
   const forStats=isHB?hf:[...bf,...hf];
 
   const latestTP=getLatestTotalProfit();
-  const atBets=filterBets(allBets,0,'All','All',bowlerFilter);
+  const atBets=filterBets(allBets,0,'All','All',bowlerFilter,'All',bookieFilter);
   const at=calcStats([...atBets,...allHyp]);
   const atProfit=latestTP!==null?latestTP:at.profit;
   const atRoi=at.turnover>0?(atProfit/at.turnover)*100:0;
@@ -778,7 +817,7 @@ function render(){
   setText('scAvgOdds',s.avgOdds>1?s.avgOdds.toFixed(2)+'x':'—');
   setText('tblTitle','Tipster Breakdown — '+tlbl);
   drawChart(bf,hf);
-  buildMonthly([...filterBets(allBets,0,tipsterFilter,activityFilter,bowlerFilter),...(showHyp?hf:[])]);
+  buildMonthly([...filterBets(allBets,0,tipsterFilter,activityFilter,bowlerFilter,sportFilter,bookieFilter),...(showHyp?hf:[])]);
   buildTable(bf,hf);
   buildRecentFeed(allBets,allHyp);
 }
@@ -810,7 +849,9 @@ function drawChart(bets,hyp){
   const line=se('path');line.setAttribute('d',lp);sa(line,{fill:'none',stroke:'#3fb950','stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'});svg.appendChild(line);
   const last=pts[pts.length-1];const dot=se('circle');sa(dot,{cx:px(last.d),cy:py(last.v),r:4,fill:'#0a0e17',stroke:'#3fb950','stroke-width':2});svg.appendChild(dot);
   const xt=Math.min(6,pts.length);
-  for(let i=0;i<xt;i++){const idx=Math.floor(i*(pts.length-1)/(xt-1));const p=pts[idx];const lb=se('text');sa(lb,{x:px(p.d),y:H-4,fill:'#6b7280','font-size':9,'text-anchor':'middle'});lb.textContent=p.d.toLocaleDateString('en-AU',{day:'numeric',month:'short'});svg.appendChild(lb);}
+  const spansYears=pts[0].d.getFullYear()!==pts[pts.length-1].d.getFullYear();
+  const dateFmt=spansYears?{day:'numeric',month:'short',year:'2-digit'}:{day:'numeric',month:'short'};
+  for(let i=0;i<xt;i++){const idx=Math.floor(i*(pts.length-1)/(xt-1));const p=pts[idx];const lb=se('text');sa(lb,{x:px(p.d),y:H-4,fill:'#6b7280','font-size':9,'text-anchor':'middle'});lb.textContent=p.d.toLocaleDateString('en-AU',dateFmt);svg.appendChild(lb);}
 }
 function se(t){return document.createElementNS('http://www.w3.org/2000/svg',t);}
 function sa(el,a){Object.entries(a).forEach(([k,v])=>el.setAttribute(k,v));}
@@ -865,10 +906,12 @@ function buildRecentFeed(bets,hyp){
   };
   const bsrc=isHB?[]:bets.filter(b=>isStatBet(b)&&b.stake>0&&actMatch(b)
     &&(bowlerFilter==='All'||b.bowler===bowlerFilter)
-    &&(tipsterFilter==='All'||b.tipster===tipsterFilter));
-  // Hyperbot (Promo, no bowler) only shows when nothing narrows it out.
+    &&(tipsterFilter==='All'||b.tipster===tipsterFilter)
+    &&(sportFilter==='All'||b.sport===sportFilter)
+    &&(bookieFilter==='All'||b.bookie===bookieFilter));
+  // Hyperbot (Promo, no bowler/sport) only shows when nothing narrows it out.
   const actAllowsHyp=activityFilter==='All'||activityFilter.toLowerCase()==='promo';
-  const hsrc=(isHB||(tipsterFilter==='All'&&bowlerFilter==='All'))&&actAllowsHyp?hyp:[];
+  const hsrc=(isHB||(tipsterFilter==='All'&&bowlerFilter==='All'))&&actAllowsHyp&&sportFilter==='All'?hyp:[];
   // When a custom date range is active, constrain the feed to that range.
   const inRange=b=>period!=='custom'||(b.date>=customStart&&b.date<=customEnd);
   const all=[...bsrc,...hsrc].filter(inRange).sort((a,b)=>b.date-a.date).slice(0,RECENT_MAX);
@@ -959,9 +1002,12 @@ function applyCustomRange(){
   document.getElementById('subCustom').textContent=customRangeText();
   render();
 }
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
 function setBowler(v){bowlerFilter=v;recentPage=0;render();}
 function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v;recentPage=0;render();}
 function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
 
 loadData();
 </script>
