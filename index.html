@@ -161,17 +161,17 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
 <div class="summary-panel" id="summaryPanel">
   <div class="panel-header">
     <div class="panel-title-wrap">
-      <div class="panel-title">📊 Summary Statistics</div>
+      <div class="panel-title">ð Summary Statistics</div>
       <div class="panel-sub">Live from Google Sheets</div>
     </div>
-    <button class="panel-close" onclick="closePanel()">✕</button>
+    <button class="panel-close" onclick="closePanel()">â</button>
   </div>
   <div class="panel-tabs">
     <button class="panel-tab active" onclick="switchPanelTab('bookie',this)">Bookmaker Summary</button>
     <button class="panel-tab" onclick="switchPanelTab('bowler',this)">Bowler Summary</button>
-    <button class="panel-tab" onclick="switchPanelTab('matrix',this)">Bowler × Bookie</button>
+    <button class="panel-tab" onclick="switchPanelTab('matrix',this)">Bowler Ã Bookie</button>
   </div>
-  <button class="panel-refresh-btn" onclick="loadData();closePanel();">↻ Refresh Dashboard Data</button>
+  <button class="panel-refresh-btn" onclick="loadData();closePanel();">â» Refresh Dashboard Data</button>
   <div class="panel-body" id="panelBody">
     <div style="text-align:center;color:var(--muted);font-size:12px;padding:30px;">Loading...</div>
   </div>
@@ -221,7 +221,7 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
         <option value="SNR Bonus">SNR Bonus</option>
       </select>
     </div>
-    <button class="summary-btn" onclick="openPanel()">📊 Summary Statistics</button>
+    <button class="summary-btn" onclick="openPanel()">ð Summary Statistics</button>
   </div>
 </nav>
 
@@ -237,16 +237,16 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
   </div>
 
   <div class="at-banner">
-    <div class="at-card"><div class="at-label">All Time Profit</div><div class="at-val c-green" id="atProfit">—</div></div>
-    <div class="at-card"><div class="at-label">All Time ROI</div><div class="at-val c-green" id="atROI">—</div></div>
-    <div class="at-card"><div class="at-label">All Time Turnover</div><div class="at-val c-purple" id="atTurnover">—</div></div>
-    <div class="at-card"><div class="at-label">All Time Units</div><div class="at-val c-green" id="atUnits">—</div></div>
+    <div class="at-card"><div class="at-label">All Time Profit</div><div class="at-val c-green" id="atProfit">â</div></div>
+    <div class="at-card"><div class="at-label">All Time ROI</div><div class="at-val c-green" id="atROI">â</div></div>
+    <div class="at-card"><div class="at-label">All Time Turnover</div><div class="at-val c-purple" id="atTurnover">â</div></div>
+    <div class="at-card"><div class="at-label">All Time Units</div><div class="at-val c-green" id="atUnits">â</div></div>
   </div>
 
   <div class="ptabs">
     <button class="ptab" onclick="setPeriod(1,this)"><span class="ptab-main">DAILY</span><span class="ptab-sub" id="sub1">Last 24 hours</span></button>
-    <button class="ptab active" onclick="setPeriod(7,this)"><span class="ptab-main">LAST 7 DAYS</span><span class="ptab-sub" id="sub7">—</span></button>
-    <button class="ptab" onclick="setPeriod(28,this)"><span class="ptab-main">LAST 28 DAYS</span><span class="ptab-sub" id="sub28">—</span></button>
+    <button class="ptab active" onclick="setPeriod(7,this)"><span class="ptab-main">LAST 7 DAYS</span><span class="ptab-sub" id="sub7">â</span></button>
+    <button class="ptab" onclick="setPeriod(28,this)"><span class="ptab-main">LAST 28 DAYS</span><span class="ptab-sub" id="sub28">â</span></button>
     <button class="ptab" onclick="setPeriod(0,this)"><span class="ptab-main">ALL TIME</span><span class="ptab-sub">INCEPTION</span></button>
     <button class="ptab" id="ptabCustom" onclick="setPeriodCustom(this)"><span class="ptab-main">CUSTOM</span><span class="ptab-sub" id="subCustom">Pick a range</span></button>
   </div>
@@ -255,28 +255,28 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
     <label>From <input type="date" id="customFrom"></label>
     <label>To <input type="date" id="customTo"></label>
     <button onclick="applyCustomRange()">Apply</button>
-    <span id="customRangeErr" style="font-size:11px;color:var(--red);display:none;">Pick both dates (From ≤ To)</span>
+    <span id="customRangeErr" style="font-size:11px;color:var(--red);display:none;">Pick both dates (From â¤ To)</span>
   </div>
 
   <div class="hero">
     <div>
-      <div class="hero-lbl">⚡ TURNOVER — <span id="heroLbl">LAST 7 DAYS</span></div>
-      <div class="hero-val" id="heroTurnover">—</div>
+      <div class="hero-lbl">â¡ TURNOVER â <span id="heroLbl">LAST 7 DAYS</span></div>
+      <div class="hero-val" id="heroTurnover">â</div>
     </div>
     <div class="hero-stats">
-      <div><div class="hs-lbl">Bets</div><div class="hs-val" id="heroBets">—</div></div>
-      <div><div class="hs-lbl">Avg Stake</div><div class="hs-val" id="heroAvg">—</div></div>
-      <div><div class="hs-lbl">Strike</div><div class="hs-val" id="heroStrike">—</div></div>
+      <div><div class="hs-lbl">Bets</div><div class="hs-val" id="heroBets">â</div></div>
+      <div><div class="hs-lbl">Avg Stake</div><div class="hs-val" id="heroAvg">â</div></div>
+      <div><div class="hs-lbl">Strike</div><div class="hs-val" id="heroStrike">â</div></div>
     </div>
   </div>
 
   <div class="stat-grid">
-    <div class="sc"><div class="sc-lbl">Profit</div><div class="sc-val c-green" id="scProfit">—</div></div>
-    <div class="sc"><div class="sc-lbl" id="scROIlbl">ROI</div><div class="sc-val c-green" id="scROI">—</div></div>
-    <div class="sc"><div class="sc-lbl">Units Gained</div><div class="sc-val c-purple" id="scUnits">—</div></div>
-    <div class="sc"><div class="sc-lbl">Profit / Bet</div><div class="sc-val c-green" id="scPPB">—</div></div>
-    <div class="sc"><div class="sc-lbl">W / L</div><div class="sc-val c-dim" id="scWL">—</div></div>
-    <div class="sc"><div class="sc-lbl">Avg Odds</div><div class="sc-val c-purple" id="scAvgOdds">—</div></div>
+    <div class="sc"><div class="sc-lbl">Profit</div><div class="sc-val c-green" id="scProfit">â</div></div>
+    <div class="sc"><div class="sc-lbl" id="scROIlbl">ROI</div><div class="sc-val c-green" id="scROI">â</div></div>
+    <div class="sc"><div class="sc-lbl">Units Gained</div><div class="sc-val c-purple" id="scUnits">â</div></div>
+    <div class="sc"><div class="sc-lbl">Profit / Bet</div><div class="sc-val c-green" id="scPPB">â</div></div>
+    <div class="sc"><div class="sc-lbl">W / L</div><div class="sc-val c-dim" id="scWL">â</div></div>
+    <div class="sc"><div class="sc-lbl">Avg Odds</div><div class="sc-val c-purple" id="scAvgOdds">â</div></div>
   </div>
 
   <div class="chart-card">
@@ -290,7 +290,7 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
   </div>
 
   <div class="tbl-card">
-    <div class="tbl-title" id="tblTitle">Tipster Breakdown — Last 7 Days</div>
+    <div class="tbl-title" id="tblTitle">Tipster Breakdown â Last 7 Days</div>
     <div class="tbl-wrap">
       <table>
         <thead><tr>
@@ -304,7 +304,7 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
 
   <div class="tbl-card" style="margin-top:14px;">
     <div class="tbl-title" style="display:flex;align-items:center;justify-content:space-between;">
-      <span>🕐 Recent Bets</span>
+      <span>ð Recent Bets</span>
       <span id="lastUpdatedFeed" style="font-size:10px;color:var(--muted);"></span>
     </div>
     <div class="tbl-wrap">
@@ -322,29 +322,29 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
 </div>
 
 <script>
-// ─── URLs ────────────────────────────────────────────────────────
+// âââ URLs ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // BETS_URL: main bet tracker tab. If this URL loads the wrong tab, add ?gid=XXXXXXXX&single=true&output=csv
 const BETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQogRvsqniNyhT5UakNVHyNQCPLehYLrl3xpe8djB3_NMVSk__9ACVyfp1izGVYHUQVCDRYa3koJV-/pub?output=csv';
 const SETTINGS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQogRvsqniNyhT5UakNVHyNQCPLehYLrl3xpe8djB3_NMVSk__9ACVyfp1izGVYHUQVCDRYa3koJV-/pub?output=csv';
 const HYP_URL = null;
 
-// ─── Activity Classification ──────────────────────────────────────
+// âââ Activity Classification ââââââââââââââââââââââââââââââââââââââ
 const ACCOUNT_ACTS = new Set(['deposit','withdrawal','adjustment','bonus credit','warm','limited','gubbed','semi-gubbed']);
 const PROMO_FILTER_ACTS = new Set(['promo','qualifying']);
 const EXCLUDE_FROM_STATS = new Set(['deposit','withdrawal']);
 const STATUS_COLORS = {'warm':'#3fb950','semi-gubbed':'#ff8a80','gubbed':'#ef5350','limited':'#b71c1c'};
 
-// ─── State ───────────────────────────────────────────────────────
+// âââ State âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 let allBets=[], allHyp=[], settingsData={}, statusMap={}, bonusMap={};
 let period=7, tipsterFilter='All', activityFilter='All', bowlerFilter='All', sportFilter='All', bookieFilter='All';
 let customStart=null, customEnd=null; // custom date range (when period==='custom')
 let currentPanelTab='bookie';
-let matrixShowAll=false; // Bowler × Bookie: false=active accounts only, true=all accounts
-let matrixBowlerFilter='All', matrixBookieFilter='All'; // Bowler × Bookie in-tab filters
-let matrixCashSort=null; // null=neutral, 'asc'=low→high, 'desc'=high→low
+let matrixShowAll=false; // Bowler Ã Bookie: false=active accounts only, true=all accounts
+let matrixBowlerFilter='All', matrixBookieFilter='All'; // Bowler Ã Bookie in-tab filters
+let matrixCashSort=null; // null=neutral, 'asc'=lowâhigh, 'desc'=highâlow
 let recentPage=0; const RECENT_PER_PAGE=15, RECENT_MAX=150; // Recent Bets pagination
 
-// ─── CSV Parsing ─────────────────────────────────────────────────
+// âââ CSV Parsing âââââââââââââââââââââââââââââââââââââââââââââââââ
 function splitLine(line){
   const vals=[];let cur='',inQ=false;
   for(let i=0;i<line.length;i++){
@@ -391,7 +391,7 @@ function parseSettings(raw){
   return result;
 }
 
-// ─── Data Cleaning ───────────────────────────────────────────────
+// âââ Data Cleaning âââââââââââââââââââââââââââââââââââââââââââââââ
 function cleanNum(s){
   if(!s||s==='-'||s===''||s==='N/A') return 0;
   const neg=s.includes('(')||(s.trim().startsWith('-')&&s.trim().length>1);
@@ -413,7 +413,7 @@ function cutoff(days){
 }
 function fmtDateShort(d){return d.toLocaleDateString('en-AU',{day:'numeric',month:'short'});}
 
-// ─── Bet Parsing ─────────────────────────────────────────────────
+// âââ Bet Parsing âââââââââââââââââââââââââââââââââââââââââââââââââ
 const RESULTED=new Set(['w','l','1','2','v','void','bonus']);
 function parseBets(rows){
   return rows.map(r=>{
@@ -440,7 +440,7 @@ function parseBets(rows){
 }
 // Status rows (Warm/Semi-Gubbed/Gubbed/Limited) carry no money, so parseBets
 // filters them out. Build a separate per bowler+bookie status lookup straight
-// from the raw rows — most recent date wins.
+// from the raw rows â most recent date wins.
 function parseStatuses(rows){
   const map={};
   rows.forEach(r=>{
@@ -455,13 +455,13 @@ function parseStatuses(rows){
   });
   return map;
 }
-// The sheet has no "NET BONUS" column — bonus movements live in the (rounded)
-// "Bonus Bal Δ" column. We recompute the true bonus balance per bowler+bookie
+// The sheet has no "NET BONUS" column â bonus movements live in the (rounded)
+// "Bonus Bal Î" column. We recompute the true bonus balance per bowler+bookie
 // straight from the full-precision STAKE column, mirroring the sheet's own rule:
-//   Bonus Credit            → + stake (signed; negatives write bonus off)
-//   any settled SNR Bonus   → − stake (W / L / Bonus / 1 / 2; voids = 0)
+//   Bonus Credit            â + stake (signed; negatives write bonus off)
+//   any settled SNR Bonus   â â stake (W / L / Bonus / 1 / 2; voids = 0)
 //   result "Bonus" (a won
-//     bonus, non-deposit)   → + stake
+//     bonus, non-deposit)   â + stake
 // Kept separate from allBets so it never touches the P&L stat pipeline.
 const BONUS_SETTLED=new Set(['w','l','bonus','1','2']);
 function parseBonusBalances(rows){
@@ -498,7 +498,7 @@ function parseHyp(rows){
   }).filter(r=>r.date);
 }
 
-// ─── Filtering & Stats ───────────────────────────────────────────
+// âââ Filtering & Stats âââââââââââââââââââââââââââââââââââââââââââ
 function isStatBet(b){return!EXCLUDE_FROM_STATS.has(b.activity.toLowerCase());}
 function filterBets(bets,days,tip,act,bowl='All',sport='All',bk='All'){
   let lo=null,hi=null;
@@ -533,7 +533,7 @@ function getLatestTotalProfit(){
   return vals.length?vals[0].totalProfit:null;
 }
 
-// ─── Data Loading ────────────────────────────────────────────────
+// âââ Data Loading ââââââââââââââââââââââââââââââââââââââââââââââââ
 async function loadData(){
   setLoad(0,'Connecting...');showLoad(true);showErr('');
   try{
@@ -560,7 +560,7 @@ function setLoad(p,m){document.getElementById('loadBar').style.width=p+'%';docum
 function showLoad(on){document.getElementById('loadingScreen').classList.toggle('hidden',!on);}
 function showErr(m){const e=document.getElementById('errMsg');e.style.display=m?'block':'none';if(m)e.textContent=m;}
 
-// ─── Summary Panel ───────────────────────────────────────────────
+// âââ Summary Panel âââââââââââââââââââââââââââââââââââââââââââââââ
 function openPanel(){
   document.getElementById('summaryPanel').classList.add('open');
   document.getElementById('panelOverlay').classList.add('open');
@@ -603,7 +603,7 @@ function renderBookmakerSummary(){
   const rows=Object.entries(map).map(([bk,d])=>({bk,...d})).sort((a,b)=>b.cashBal-a.cashBal);
   if(!rows.length) return '<div style="color:var(--muted);text-align:center;padding:30px;font-size:12px;">No data loaded yet.</div>';
   const tc=rows.reduce((s,r)=>s+r.cashBal,0),tb=rows.reduce((s,r)=>s+r.bonusBal,0);
-  return`<div class="panel-section-title">All Bookmakers — Cash: ${fmt$(tc)} | Bonus: ${fmt$(tb)}</div>
+  return`<div class="panel-section-title">All Bookmakers â Cash: ${fmt$(tc)} | Bonus: ${fmt$(tb)}</div>
   <div class="panel-tbl-wrap"><table class="panel-tbl"><thead><tr>
     <th>BOOKMAKER</th><th>CASH BAL</th><th>BONUS BAL</th><th>NET P&L</th><th>BETS</th><th>DEP</th><th>WIT</th>
   </tr></thead><tbody>${rows.map(r=>`<tr>
@@ -630,7 +630,7 @@ function renderBowlerSummary(){
   const rows=Object.entries(map).map(([bw,d])=>({bw,...d})).sort((a,b)=>b.cashBal-a.cashBal);
   if(!rows.length) return '<div style="color:var(--muted);text-align:center;padding:30px;font-size:12px;">No data loaded yet.</div>';
   const tc=rows.reduce((s,r)=>s+r.cashBal,0),tb=rows.reduce((s,r)=>s+r.bonusBal,0);
-  return`<div class="panel-section-title">All Bowlers — Cash: ${fmt$(tc)} | Bonus: ${fmt$(tb)}</div>
+  return`<div class="panel-section-title">All Bowlers â Cash: ${fmt$(tc)} | Bonus: ${fmt$(tb)}</div>
   <div class="panel-tbl-wrap"><table class="panel-tbl"><thead><tr>
     <th>BOWLER</th><th>CASH BAL</th><th>BONUS BAL</th><th>NET P&L</th><th>BETS</th><th>DEPS</th><th>WITS</th>
   </tr></thead><tbody>${rows.map(r=>`<tr>
@@ -662,19 +662,17 @@ function renderBowlerBookieMatrix(){
     if(!map[key]){const p=key.split('|||');map[key]={bowler:p[0],bookie:p[1],cashBal:0,bonusBal:0,pnl:0,deps:0,wits:0,mugCount:0,mugStake:0,promoCount:0,promoStake:0,status:null,statusDate:null};}
     map[key].bonusBal=v;
   });
-  // Active-only mode rounds near-zero balances (<$5) to zero so dormant accounts
-  // drop off until a new deposit lands. "All accounts" mode shows everything,
-  // with true balances (no rounding).
-  const ZERO_THRESHOLD=5;
+  // Active-only mode shows accounts with a positive balance (rounded to cent).
+  // "All accounts" mode shows everything with true balances.
   let rows;
   if(matrixShowAll){
     rows=Object.values(map);
   }else{
-    Object.values(map).forEach(m=>{
-      if(Math.abs(m.cashBal)<ZERO_THRESHOLD) m.cashBal=0;
-      if(Math.abs(m.bonusBal)<ZERO_THRESHOLD) m.bonusBal=0;
+    rows=Object.values(map).filter(m=>{
+      const cb=Math.round(m.cashBal*100)/100;
+      const bb=Math.round(m.bonusBal*100)/100;
+      return cb>0||bb>0;
     });
-    rows=Object.values(map).filter(m=>m.cashBal>0||m.bonusBal>0);
   }
   if(matrixCashSort==='asc') rows.sort((a,b)=>a.cashBal-b.cashBal);
   else if(matrixCashSort==='desc') rows.sort((a,b)=>b.cashBal-a.cashBal);
@@ -690,11 +688,11 @@ function renderBowlerBookieMatrix(){
   const bookieOpts=opt('All',matrixBookieFilter,'All Bookmakers')+allBookies.map(v=>opt(v,matrixBookieFilter)).join('');
   const header=`<div class="panel-section-title">${rows.length} ${matrixShowAll?'accounts (all)':'active accounts'}</div>
   <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;flex-wrap:wrap;">
-    <span style="font-size:11px;color:#3fb950;">● Warm</span>
-    <span style="font-size:11px;color:#ff8a80;">● Semi-Gubbed</span>
-    <span style="font-size:11px;color:#ef5350;">● Gubbed</span>
-    <span style="font-size:11px;color:#b71c1c;">● Limited</span>
-    <span style="font-size:11px;color:var(--muted);">● No status</span>
+    <span style="font-size:11px;color:#3fb950;">â Warm</span>
+    <span style="font-size:11px;color:#ff8a80;">â Semi-Gubbed</span>
+    <span style="font-size:11px;color:#ef5350;">â Gubbed</span>
+    <span style="font-size:11px;color:#b71c1c;">â Limited</span>
+    <span style="font-size:11px;color:var(--muted);">â No status</span>
     <label class="scope-toggle" style="margin-left:auto;" title="Active = positive balance only; All = every account">
       <input type="checkbox" ${matrixShowAll?'checked':''} onchange="toggleMatrixScope(this.checked)">
       <span class="scope-slider"></span>
@@ -706,7 +704,7 @@ function renderBowlerBookieMatrix(){
     <select class="nav-select" onchange="setMatrixBookie(this.value)">${bookieOpts}</select>
   </div>`;
   if(!rows.length) return header+'<div style="color:var(--muted);text-align:center;padding:30px;font-size:12px;">No accounts match these filters.</div>';
-  const cashIcon=matrixCashSort===null?'⇅':matrixCashSort==='asc'?'↑':'↓';
+  const cashIcon=matrixCashSort===null?'â':matrixCashSort==='asc'?'â':'â';
   const cashColor=matrixCashSort===null?'var(--muted)':'var(--purple)';
   return header+`
   <div class="panel-tbl-wrap"><table class="panel-tbl"><thead><tr>
@@ -730,7 +728,7 @@ function renderBowlerBookieMatrix(){
   }).join('')}</tbody></table></div>`;
 }
 
-// ─── Dropdowns ───────────────────────────────────────────────────
+// âââ Dropdowns âââââââââââââââââââââââââââââââââââââââââââââââââââ
 function buildOptions(){
   const sBowls=settingsData['BOWLERS']||[];
   const bowls=sBowls.length?sBowls:[...new Set(allBets.map(b=>b.bowler))].filter(Boolean).sort();
@@ -761,19 +759,19 @@ function buildOptions(){
   if([...bkSel.options].some(o=>o.value===prevBk)) bkSel.value=prevBk;
 }
 
-// ─── Filter Pill ─────────────────────────────────────────────────
+// âââ Filter Pill âââââââââââââââââââââââââââââââââââââââââââââââââ
 function updateFilterBar(){
   const bar=document.getElementById('filterBar');
   const pbk=document.getElementById('pillBookie'),pb=document.getElementById('pillBowler'),pt=document.getElementById('pillTipster'),psp=document.getElementById('pillSport'),pa=document.getElementById('pillActivity');
   bar.classList.toggle('active',bookieFilter!=='All'||bowlerFilter!=='All'||tipsterFilter!=='All'||sportFilter!=='All'||activityFilter!=='All');
-  if(bookieFilter!=='All'){pbk.style.display='inline-flex';pbk.textContent='🏠 '+bookieFilter;}else pbk.style.display='none';
-  if(bowlerFilter!=='All'){pb.style.display='inline-flex';pb.textContent='🎳 '+bowlerFilter;}else pb.style.display='none';
-  if(tipsterFilter!=='All'){pt.style.display='inline-flex';pt.textContent='👤 '+tipsterFilter;}else pt.style.display='none';
-  if(sportFilter!=='All'){psp.style.display='inline-flex';psp.textContent='🏆 '+sportFilter;}else psp.style.display='none';
-  if(activityFilter!=='All'){pa.style.display='inline-flex';pa.textContent='🏷 '+activityFilter;}else pa.style.display='none';
+  if(bookieFilter!=='All'){pbk.style.display='inline-flex';pbk.textContent='ð  '+bookieFilter;}else pbk.style.display='none';
+  if(bowlerFilter!=='All'){pb.style.display='inline-flex';pb.textContent='ð³ '+bowlerFilter;}else pb.style.display='none';
+  if(tipsterFilter!=='All'){pt.style.display='inline-flex';pt.textContent='ð¤ '+tipsterFilter;}else pt.style.display='none';
+  if(sportFilter!=='All'){psp.style.display='inline-flex';psp.textContent='ð '+sportFilter;}else psp.style.display='none';
+  if(activityFilter!=='All'){pa.style.display='inline-flex';pa.textContent='ð· '+activityFilter;}else pa.style.display='none';
 }
 
-// ─── Main Render ─────────────────────────────────────────────────
+// âââ Main Render âââââââââââââââââââââââââââââââââââââââââââââââââ
 function render(){
   updateFilterBar();
   const isHB=tipsterFilter==='Hyperbot';
@@ -794,8 +792,8 @@ function render(){
   setText('atUnits',fmtU(at.units));colorEl('atUnits',at.units);
 
   const now=new Date();
-  document.getElementById('sub7').textContent=fmtDateShort(cutoff(7))+' – '+fmtDateShort(now);
-  document.getElementById('sub28').textContent=fmtDateShort(cutoff(28))+' – '+fmtDateShort(now);
+  document.getElementById('sub7').textContent=fmtDateShort(cutoff(7))+' â '+fmtDateShort(now);
+  document.getElementById('sub28').textContent=fmtDateShort(cutoff(28))+' â '+fmtDateShort(now);
 
   let lbl,tlbl;
   if(period==='custom'){lbl=customRangeText();tlbl=lbl;}
@@ -806,7 +804,7 @@ function render(){
   setText('heroAvg',fmt$(s.avgStake));setText('heroStrike',fmtP(s.strike));
   setText('scProfit',fmt$(s.profit));colorEl('scProfit',s.profit);
   // For SNR (Stake-Not-Returned) bonus bets, "ROI" is really the bonus
-  // retention/conversion rate (cash extracted ÷ bonus face value) — relabel it.
+  // retention/conversion rate (cash extracted Ã· bonus face value) â relabel it.
   const snr=activityFilter==='SNR Bonus';
   setText('scROIlbl',snr?'Retention':'ROI');
   setText('thROI',snr?'RETENTION':'ROI');
@@ -814,8 +812,8 @@ function render(){
   setText('scUnits',fmtU(s.units));
   setText('scPPB',fmt$(s.ppb));colorEl('scPPB',s.ppb);
   document.getElementById('scWL').textContent=s.wins+'W  '+s.losses+'L';
-  setText('scAvgOdds',s.avgOdds>1?s.avgOdds.toFixed(2)+'x':'—');
-  setText('tblTitle','Tipster Breakdown — '+tlbl);
+  setText('scAvgOdds',s.avgOdds>1?s.avgOdds.toFixed(2)+'x':'â');
+  setText('tblTitle','Tipster Breakdown â '+tlbl);
   drawChart(bf,hf);
   buildMonthly([...filterBets(allBets,0,tipsterFilter,activityFilter,bowlerFilter,sportFilter,bookieFilter),...(showHyp?hf:[])]);
   buildTable(bf,hf);
@@ -828,7 +826,7 @@ function periodLabel(l){
   return'All Time';
 }
 
-// ─── Chart ───────────────────────────────────────────────────────
+// âââ Chart âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function drawChart(bets,hyp){
   const all=[...bets,...hyp].filter(b=>b.date&&isStatBet(b)&&!b.pending).sort((a,b)=>a.date-b.date);
   const svg=document.getElementById('chartSvg');svg.innerHTML='';
@@ -856,7 +854,7 @@ function drawChart(bets,hyp){
 function se(t){return document.createElementNS('http://www.w3.org/2000/svg',t);}
 function sa(el,a){Object.entries(a).forEach(([k,v])=>el.setAttribute(k,v));}
 
-// ─── Monthly Grid ─────────────────────────────────────────────────
+// âââ Monthly Grid âââââââââââââââââââââââââââââââââââââââââââââââââ
 function buildMonthly(bets){
   const grid=document.getElementById('monthlyGrid');grid.innerHTML='';
   const mm={};
@@ -873,7 +871,7 @@ function buildMonthly(bets){
   });
 }
 
-// ─── Tipster Table ────────────────────────────────────────────────
+// âââ Tipster Table ââââââââââââââââââââââââââââââââââââââââââââââââ
 function buildTable(bets,hyp){
   const tbody=document.getElementById('tblBody');tbody.innerHTML='';
   const tips=[...new Set(bets.map(b=>b.tipster))].sort();
@@ -882,18 +880,18 @@ function buildTable(bets,hyp){
     .sort((a,b)=>b.s.turnover-a.s.turnover)
     .forEach(({name,s})=>{
       const tr=document.createElement('tr');
-      tr.innerHTML=`<td>${name}</td><td class="c-purple">${fmt$(s.turnover)}</td><td>${s.bets}</td><td>${s.avgOdds>1?s.avgOdds.toFixed(2):'—'}</td><td><span class="roi-badge ${roiCls(s.roi)}">${fmtP(s.roi)}</span></td><td class="${s.units>=0?'c-green':'c-red'}">${fmtU(s.units)}</td><td class="${s.profit>=0?'c-green':'c-red'}">${fmt$(s.profit)}</td><td class="${s.ppb>=0?'c-green':'c-red'}">${fmt$(s.ppb)}</td><td>${fmtP(s.strike)}</td>`;
+      tr.innerHTML=`<td>${name}</td><td class="c-purple">${fmt$(s.turnover)}</td><td>${s.bets}</td><td>${s.avgOdds>1?s.avgOdds.toFixed(2):'â'}</td><td><span class="roi-badge ${roiCls(s.roi)}">${fmtP(s.roi)}</span></td><td class="${s.units>=0?'c-green':'c-red'}">${fmtU(s.units)}</td><td class="${s.profit>=0?'c-green':'c-red'}">${fmt$(s.profit)}</td><td class="${s.ppb>=0?'c-green':'c-red'}">${fmt$(s.ppb)}</td><td>${fmtP(s.strike)}</td>`;
       tbody.appendChild(tr);
     });
   if(hyp.length>0){
     const div=document.createElement('tr');div.className='hb-div';div.innerHTML='<td colspan="9"></td>';tbody.appendChild(div);
     const hs=calcStats(hyp);const hr=document.createElement('tr');
-    hr.innerHTML=`<td style="color:#a78bfa">⚙ Hyperbot</td><td class="c-purple">${fmt$(hs.turnover)}</td><td>${hs.bets}</td><td>—</td><td><span class="roi-badge ${roiCls(hs.roi)}">${fmtP(hs.roi)}</span></td><td class="${hs.units>=0?'c-green':'c-red'}">${fmtU(hs.units)}</td><td class="${hs.profit>=0?'c-green':'c-red'}">${fmt$(hs.profit)}</td><td class="${hs.ppb>=0?'c-green':'c-red'}">${fmt$(hs.ppb)}</td><td>${fmtP(hs.strike)}</td>`;
+    hr.innerHTML=`<td style="color:#a78bfa">â Hyperbot</td><td class="c-purple">${fmt$(hs.turnover)}</td><td>${hs.bets}</td><td>â</td><td><span class="roi-badge ${roiCls(hs.roi)}">${fmtP(hs.roi)}</span></td><td class="${hs.units>=0?'c-green':'c-red'}">${fmtU(hs.units)}</td><td class="${hs.profit>=0?'c-green':'c-red'}">${fmt$(hs.profit)}</td><td class="${hs.ppb>=0?'c-green':'c-red'}">${fmt$(hs.ppb)}</td><td>${fmtP(hs.strike)}</td>`;
     tbody.appendChild(hr);
   }
 }
 
-// ─── Recent Bets Feed ─────────────────────────────────────────────
+// âââ Recent Bets Feed âââââââââââââââââââââââââââââââââââââââââââââ
 function buildRecentFeed(bets,hyp){
   const tbody=document.getElementById('recentBody');tbody.innerHTML='';
   const pager=document.getElementById('recentPager');
@@ -921,23 +919,23 @@ function buildRecentFeed(bets,hyp){
   const recent=all.slice(recentPage*RECENT_PER_PAGE,(recentPage+1)*RECENT_PER_PAGE);
   recent.forEach(b=>{
     const isWin=b.result==='w'||b.result==='1',isLoss=b.result==='l'||b.result==='2';
-    const ds=b.date?b.date.toLocaleDateString('en-AU',{day:'numeric',month:'short'}):'—';
-    const sel=(b._raw&&(b._raw['SELECTION']||b._raw['Selection']))||'—';
-    const bk=(b._raw&&(b._raw['BOOKIE']||b._raw['Bookie']))||b.bookie||'—';
+    const ds=b.date?b.date.toLocaleDateString('en-AU',{day:'numeric',month:'short'}):'â';
+    const sel=(b._raw&&(b._raw['SELECTION']||b._raw['Selection']))||'â';
+    const bk=(b._raw&&(b._raw['BOOKIE']||b._raw['Bookie']))||b.bookie||'â';
     const al=b.activity.toLowerCase();
     const ac=al==='promo'||al==='qualifying'?'rgba(167,139,250,.15);color:#a78bfa':al==='mug'?'rgba(240,165,0,.15);color:#f0a500':'rgba(63,185,80,.15);color:#3fb950';
     let rh;
-    if(b.pending) rh='<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:rgba(240,165,0,.15);color:#f0a500;">⏳</span>';
+    if(b.pending) rh='<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:rgba(240,165,0,.15);color:#f0a500;">â³</span>';
     else if(isWin) rh='<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:rgba(63,185,80,.15);color:var(--green);">W</span>';
     else if(isLoss) rh='<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:rgba(248,81,73,.15);color:var(--red);">L</span>';
     else rh='<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:var(--bg4);color:var(--muted);">V</span>';
     const plColor=b.pending?'var(--muted)':isWin?'var(--green)':'var(--red)';
     const plText=b.pending?'Pending':fmt$(b.netCash);
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td style="color:var(--muted);font-size:11px;">${ds}</td><td style="font-weight:600;">${b.tipster}</td><td><span style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;background:${ac};">${b.activity||'—'}</span></td><td style="color:var(--dim);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${sel}</td><td style="color:var(--dim);font-size:11px;">${bk}</td><td style="color:var(--purple);">${b.odds>0?b.odds.toFixed(2):'—'}</td><td>${fmt$(b.stake)}</td><td>${rh}</td><td style="font-weight:600;color:${plColor};">${plText}</td>`;
+    tr.innerHTML=`<td style="color:var(--muted);font-size:11px;">${ds}</td><td style="font-weight:600;">${b.tipster}</td><td><span style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;background:${ac};">${b.activity||'â'}</span></td><td style="color:var(--dim);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${sel}</td><td style="color:var(--dim);font-size:11px;">${bk}</td><td style="color:var(--purple);">${b.odds>0?b.odds.toFixed(2):'â'}</td><td>${fmt$(b.stake)}</td><td>${rh}</td><td style="font-weight:600;color:${plColor};">${plText}</td>`;
     tbody.appendChild(tr);
   });
-  const ts=all[0].date?all[0].date.toLocaleDateString('en-AU',{day:'numeric',month:'short'}):'—';
+  const ts=all[0].date?all[0].date.toLocaleDateString('en-AU',{day:'numeric',month:'short'}):'â';
   document.getElementById('lastUpdatedFeed').textContent='Last bet: '+ts;
   renderRecentPager(totalPages);
 }
@@ -945,12 +943,12 @@ function renderRecentPager(totalPages){
   const pager=document.getElementById('recentPager');if(!pager)return;
   if(totalPages<=1){pager.innerHTML='';return;}
   const cur=recentPage;
-  let html=`<button ${cur===0?'disabled':''} onclick="setRecentPage(${cur-1})">‹</button>`;
+  let html=`<button ${cur===0?'disabled':''} onclick="setRecentPage(${cur-1})">â¹</button>`;
   pageWindow(cur,totalPages).forEach(p=>{
-    if(p==='gap') html+='<span class="pager-gap">…</span>';
+    if(p==='gap') html+='<span class="pager-gap">â¦</span>';
     else html+=`<button class="${p===cur?'active':''}" onclick="setRecentPage(${p})">${p+1}</button>`;
   });
-  html+=`<button ${cur===totalPages-1?'disabled':''} onclick="setRecentPage(${cur+1})">›</button>`;
+  html+=`<button ${cur===totalPages-1?'disabled':''} onclick="setRecentPage(${cur+1})">âº</button>`;
   pager.innerHTML=html;
 }
 function pageWindow(cur,total){
@@ -967,19 +965,107 @@ function pageWindow(cur,total){
 }
 function setRecentPage(p){recentPage=p;buildRecentFeed(allBets,allHyp);}
 
-// ─── Formatters ───────────────────────────────────────────────────
+// âââ Formatters âââââââââââââââââââââââââââââââââââââââââââââââââââ
 function roiCls(r){return r>2?'roi-pos':r<-2?'roi-neg':'roi-neu';}
-function fmt$(n){if(isNaN(n))return'—';const a=Math.abs(n);const s=a>=1000?'$'+a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'$'+a.toFixed(2);return n<0?'-'+s:s;}
-function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
-function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function fmt$(n){if(isNaN(n))return'â';const r=Math.round(n*100)/100;if(r===0)return'$0.00';const a=Math.abs(r);const s=a>=1000?'
+function fmtP(n){if(isNaN(n))return'â';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'â';return(n>=0?'+':'')+n.toFixed(2)+'u';}
 function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
 function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
 
-// ─── Controls ─────────────────────────────────────────────────────
+// âââ Controls âââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
 function pad2(n){return String(n).padStart(2,'0');}
 function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
-function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' â '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v;recentPage=0;render();}
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'
+function fmtP(n){if(isNaN(n))return'â';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'â';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// âââ Controls âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' â '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v;recentPage=0;render();}
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toFixed(2);return r<0?'-'+s:s;}
+function fmtP(n){if(isNaN(n))return'â';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'â';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// âââ Controls âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' â '+fmtDateShort(customEnd):'CUSTOM';}
 function setPeriodCustom(btn){
   document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
