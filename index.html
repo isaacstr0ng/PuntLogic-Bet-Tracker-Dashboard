@@ -968,7 +968,826 @@ function setRecentPage(p){recentPage=p;buildRecentFeed(allBets,allHyp);}
 
 // ─── Formatters ───────────────────────────────────────────────────
 function roiCls(r){return r>2?'roi-pos':r<-2?'roi-neg':'roi-neu';}
-function fmt$(n){if(isNaN(n))return'—';const r=Math.round(n*100)/100;if(r===0)return'$0.00';const a=Math.abs(r);const s=a>=1000?'n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmt$(n){if(isNaN(n))return'—';const r=Math.round(n*100)/100;if(r===0)return'$0.00';const a=Math.abs(r);const s=a>=1000?'
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v==='All'?new Set():new Set([v]);recentPage=0;render();}
+function toggleSport(v){if(v==='All'){sportFilter.clear();}else if(sportFilter.has(v)){sportFilter.delete(v);}else{sportFilter.add(v);}updateSportBtn();recentPage=0;render();}
+function updateSportBtn(){const btn=document.getElementById('sportBtn');if(!btn)return;btn.textContent=(sportFilter.size===0?'All Sports':[...sportFilter].join(', '))+' ▾';}
+let _sportDDOpen=false;
+function toggleSportDropdown(e){e.stopPropagation();_sportDDOpen=!_sportDDOpen;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display=_sportDDOpen?'block':'none';}
+document.addEventListener('click',function(e){if(_sportDDOpen){const m=document.getElementById('sportMulti');if(!m||!m.contains(e.target)){_sportDDOpen=false;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display='none';}}});
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v;recentPage=0;render();}
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toFixed(2);return r<0?'-'+s:s;}
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v;recentPage=0;render();}
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v==='All'?new Set():new Set([v]);recentPage=0;render();}
+function toggleSport(v){if(v==='All'){sportFilter.clear();}else if(sportFilter.has(v)){sportFilter.delete(v);}else{sportFilter.add(v);}updateSportBtn();recentPage=0;render();}
+function updateSportBtn(){const btn=document.getElementById('sportBtn');if(!btn)return;btn.textContent=(sportFilter.size===0?'All Sports':[...sportFilter].join(', '))+' ▾';}
+let _sportDDOpen=false;
+function toggleSportDropdown(e){e.stopPropagation();_sportDDOpen=!_sportDDOpen;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display=_sportDDOpen?'block':'none';}
+document.addEventListener('click',function(e){if(_sportDDOpen){const m=document.getElementById('sportMulti');if(!m||!m.contains(e.target)){_sportDDOpen=false;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display='none';}}});
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v;recentPage=0;render();}
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toFixed(2);return r<0?'-'+s:s;}
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v;recentPage=0;render();}
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toFixed(2);return r<0?'-'+s:s;}
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v==='All'?new Set():new Set([v]);recentPage=0;render();}
+function toggleSport(v){if(v==='All'){sportFilter.clear();}else if(sportFilter.has(v)){sportFilter.delete(v);}else{sportFilter.add(v);}updateSportBtn();recentPage=0;render();}
+function updateSportBtn(){const btn=document.getElementById('sportBtn');if(!btn)return;btn.textContent=(sportFilter.size===0?'All Sports':[...sportFilter].join(', '))+' ▾';}
+let _sportDDOpen=false;
+function toggleSportDropdown(e){e.stopPropagation();_sportDDOpen=!_sportDDOpen;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display=_sportDDOpen?'block':'none';}
+document.addEventListener('click',function(e){if(_sportDDOpen){const m=document.getElementById('sportMulti');if(!m||!m.contains(e.target)){_sportDDOpen=false;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display='none';}}});
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v;recentPage=0;render();}
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toFixed(2);return r<0?'-'+s:s;}
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v;recentPage=0;render();}
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v==='All'?new Set():new Set([v]);recentPage=0;render();}
+function toggleSport(v){if(v==='All'){sportFilter.clear();}else if(sportFilter.has(v)){sportFilter.delete(v);}else{sportFilter.add(v);}updateSportBtn();recentPage=0;render();}
+function updateSportBtn(){const btn=document.getElementById('sportBtn');if(!btn)return;btn.textContent=(sportFilter.size===0?'All Sports':[...sportFilter].join(', '))+' ▾';}
+let _sportDDOpen=false;
+function toggleSportDropdown(e){e.stopPropagation();_sportDDOpen=!_sportDDOpen;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display=_sportDDOpen?'block':'none';}
+document.addEventListener('click',function(e){if(_sportDDOpen){const m=document.getElementById('sportMulti');if(!m||!m.contains(e.target)){_sportDDOpen=false;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display='none';}}});
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v;recentPage=0;render();}
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toFixed(2);return r<0?'-'+s:s;}
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v;recentPage=0;render();}
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v==='All'?new Set():new Set([v]);recentPage=0;render();}
+function toggleSport(v){if(v==='All'){sportFilter.clear();}else if(sportFilter.has(v)){sportFilter.delete(v);}else{sportFilter.add(v);}updateSportBtn();recentPage=0;render();}
+function updateSportBtn(){const btn=document.getElementById('sportBtn');if(!btn)return;btn.textContent=(sportFilter.size===0?'All Sports':[...sportFilter].join(', '))+' ▾';}
+let _sportDDOpen=false;
+function toggleSportDropdown(e){e.stopPropagation();_sportDDOpen=!_sportDDOpen;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display=_sportDDOpen?'block':'none';}
+document.addEventListener('click',function(e){if(_sportDDOpen){const m=document.getElementById('sportMulti');if(!m||!m.contains(e.target)){_sportDDOpen=false;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display='none';}}});
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v;recentPage=0;render();}
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toFixed(2);return r<0?'-'+s:s;}
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v;recentPage=0;render();}
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toFixed(2);return r<0?'-'+s:s;}
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v==='All'?new Set():new Set([v]);recentPage=0;render();}
+function toggleSport(v){if(v==='All'){sportFilter.clear();}else if(sportFilter.has(v)){sportFilter.delete(v);}else{sportFilter.add(v);}updateSportBtn();recentPage=0;render();}
+function updateSportBtn(){const btn=document.getElementById('sportBtn');if(!btn)return;btn.textContent=(sportFilter.size===0?'All Sports':[...sportFilter].join(', '))+' ▾';}
+let _sportDDOpen=false;
+function toggleSportDropdown(e){e.stopPropagation();_sportDDOpen=!_sportDDOpen;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display=_sportDDOpen?'block':'none';}
+document.addEventListener('click',function(e){if(_sportDDOpen){const m=document.getElementById('sportMulti');if(!m||!m.contains(e.target)){_sportDDOpen=false;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display='none';}}});
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v;recentPage=0;render();}
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toFixed(2);return r<0?'-'+s:s;}
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
+
+// ─── Controls ─────────────────────────────────────────────────────
+function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
+function pad2(n){return String(n).padStart(2,'0');}
+function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function setPeriodCustom(btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('customRange').classList.add('active');
+  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
+  to.max=from.max=toInputDate(now);
+  if(!to.value) to.value=toInputDate(now);
+  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
+  applyCustomRange(); // show the default/last range immediately
+}
+function applyCustomRange(){
+  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
+  const err=document.getElementById('customRangeErr');
+  if(!fv||!tv){err.style.display='inline';return;}
+  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
+  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
+  if(lo>hi){err.style.display='inline';return;}
+  err.style.display='none';
+  customStart=lo;customEnd=hi;period='custom';recentPage=0;
+  document.getElementById('subCustom').textContent=customRangeText();
+  render();
+}
+function setBookie(v){bookieFilter=v;recentPage=0;render();}
+function setBowler(v){bowlerFilter=v;recentPage=0;render();}
+function setTipster(v){tipsterFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v;recentPage=0;render();}
+function setActivity(v){activityFilter=v;recentPage=0;render();}
+function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
+
+loadData();
+</script>
+</body>
+</html>
++a.toFixed(2);return r<0?'-'+s:s;}
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
 function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
 function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
 function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
