@@ -330,7 +330,7 @@ const SETTINGS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQogRvsqn
 const HYP_URL = null;
 
 // ─── Activity Classification ──────────────────────────────────────
-const ACCOUNT_ACTS = new Set(['deposit','withdrawal','bonus credit','adjustment','bonus credit','warm','limited','gubbed','semi-gubbed']);
+const ACCOUNT_ACTS = new Set(['deposit','withdrawal','adjustment','bonus credit','warm','limited','gubbed','semi-gubbed']);
 const PROMO_FILTER_ACTS = new Set(['promo','qualifying']);
 const EXCLUDE_FROM_STATS = new Set(['deposit','withdrawal','bonus credit','adjustment','warm','limited','gubbed','semi-gubbed']);
 const STATUS_COLORS = {'warm':'#3fb950','semi-gubbed':'#ff8a80','gubbed':'#ef5350','limited':'#b71c1c'};
@@ -541,7 +541,7 @@ async function loadData(){
     setLoad(15,'Fetching bets...');
     const bRaw=await fetchWithRetry(BETS_URL).then(r=>{if(!r.ok)throw new Error('Bets: HTTP '+r.status);return r.text();});
     setLoad(40,'Fetching settings...');
-    const sRaw=SETTINGS_URL!==BETS_URL?await fetch(SETTINGS_URL).then(r=>r.ok?r.text():null).catch(()=>null):bRaw;
+    const sRaw=SETTINGS_URL!==BETS_URL?await fetch(SETTINGS_URL..then(r=>r.ok?r.text():null).catch(()=>null):bRaw;
     const hRaw=HYP_URL?await fetch(HYP_URL).then(r=>r.ok?r.text():null).catch(()=>null):null;
     setLoad(65,'Parsing...');
     const betRows=parseCSV(bRaw);
@@ -558,7 +558,7 @@ async function loadData(){
 }
 function wait(ms){return new Promise(r=>setTimeout(r,ms));}
 async function fetchWithRetry(url,ms=25000,tries=2){for(let i=0;i<tries;i++){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);try{const r=await fetch(url,{signal:c.signal});clearTimeout(t);return r;}catch(e){clearTimeout(t);if(i===tries-1)throw e;setLoad(20,'Retrying...');await wait(2000);}}}
-function setLoad(p,m){document.getElementById('loadBar').style.width=p+'%';document.getElementById('loadStatus').textContent=m;}
+function setLoad(p,m){document.getElementById('loadBar').style.width=p+%'';document.getElementById('loadStatus').textContent=m;}
 function showLoad(on){document.getElementById('loadingScreen').classList.toggle('hidden',!on);}
 function showErr(m){const e=document.getElementById('errMsg');e.style.display=m?'block':'none';if(m)e.textContent=m;}
 
@@ -839,7 +839,7 @@ function drawChart(bets,hyp){
   const vals=pts.map(p=>p.v),minV=Math.min(0,...vals),maxV=Math.max(0,...vals),rng=maxV-minV||1;
   const minD=pts[0].d.getTime(),maxD=pts[pts.length-1].d.getTime(),dRng=maxD-minD||1;
   const px=d=>PL+((d.getTime()-minD)/dRng)*cW,py=v=>PT+cH-((v-minV)/rng)*cH;
-  const defs=se('defs');defs.innerHTML=`<linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3fb950" stop-opacity=".35"/><stop offset="100%" stop-color="#3fb950" stop-opacity=".02"/></linearGradient>`;svg.appendChild(defs);
+  const defs=se('defs');defs.innerHTML<`<linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3fb950" stop-opacity=".35"/><stop offset="100%" stop-color="#3fb950" stop-opacity=".02"/></linearGradient>`;svg.appendChild(defs);
   for(let i=0;i<=4;i++){const v=minV+(rng/4)*i,y=py(v);const gl=se('line');sa(gl,{x1:PL,x2:W-PR,y1:y,y2:y,stroke:'#1a2235','stroke-width':1});svg.appendChild(gl);const lb=se('text');sa(lb,{x:PL-6,y:y+4,fill:'#6b7280','font-size':9,'text-anchor':'end'});lb.textContent=Math.abs(v)>=1000?'$'+(v/1000).toFixed(1)+'k':'$'+v.toFixed(0);svg.appendChild(lb);}
   function mkPath(pts){if(pts.length<2)return`M${px(pts[0].d)},${py(pts[0].v)}`;let d=`M${px(pts[0].d)},${py(pts[0].v)}`;for(let i=1;i<pts.length;i++){const p=pts[i-1],c=pts[i];const mx=(px(p.d)+px(c.d))/2;d+=` C${mx},${py(p.v)} ${mx},${py(c.v)} ${px(c.d)},${py(c.v)}`;}return d;}
   const lp=mkPath(pts),ap=lp+` L${px(pts[pts.length-1].d)},${py(0)} L${px(pts[0].d)},${py(0)} Z`;
@@ -881,7 +881,7 @@ function buildTable(bets,hyp){
     .sort((a,b)=>b.s.turnover-a.s.turnover)
     .forEach(({name,s})=>{
       const tr=document.createElement('tr');
-      tr.innerHTML=`<td>${name}</td><td class="c-purple">${fmt$(s.turnover)}</td><td>${s.bets}</td><td>${s.avgOdds>1?s.avgOdds.toFixed(2):'—'}</td><td><span class="roi-badge ${roiCls(s.roi)}">${fmtP(s.roi)}</span></td><td class="${s.units>=0?'c-green':'c-red'}">${fmtU(s.units)}</td><td class="${s.profit>=0?'c-green':'c-red'}">${fmt$(s.profit)}</td><td class="${s.ppb>=0?'c-green':'c-red'}">${fmt$(s.ppb)}</td><td>${fmtP(s.strike)}</td>`;
+      tr.innerHTML<`<td>${name}</td><td class="c-purple">${fmt$(s.turnover)}</td><td>${s.bets}</td><td>${s.avgOdds>1?s.avgOdds.toFixed(2):'—'}</td><td><span class="roi-badge ${roiCls(s.roi)}">${fmtP(s.roi)}</span></td><td class="${s.units>=0?'c-green':'c-red'}">${fmtU(s.units)}</td><td class="${s.profit>=0?'c-green':'c-red'}">${fmt$(s.profit)}</td><td class="${s.ppb>=0?'c-green':'c-red'}">${fmt$(s.ppb)}</td><td>${fmtP(s.strike)}</td>`;
       tbody.appendChild(tr);
     });
   if(hyp.length>0){
@@ -968,7 +968,7 @@ function setRecentPage(p){recentPage=p;buildRecentFeed(allBets,allHyp);}
 
 // ─── Formatters ───────────────────────────────────────────────────
 function roiCls(r){return r>2?'roi-pos':r<-2?'roi-neg':'roi-neu';}
-function fmt$(n){if(isNaN(n))return'—';const r=Math.round(n*100)/100;if(r===0)return'$0.00';const a=Math.abs(r);const s=a>=1000?'$'+a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'$'+a.toFixed(2);return r<0?'-'+s:s;}
+function fmt$(n){if(isNaN(n))return'—';const r=Math.round(n*100)/100;if(r===0)return'$0.00';const a=Math.abr(r);const s=a>=1000?'$'+a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'$'+a.toFixed(2);return r<0?'-'+s:s;}
 function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
 function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
 function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
@@ -978,7 +978,7 @@ function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classL
 function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
 function pad2(n){return String(n).padStart(2,'0');}
 function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
-function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function customRangeText(){return(&ustomStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
 function setPeriodCustom(btn){
   document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
@@ -1010,367 +1010,6 @@ function updateSportBtn(){const btn=document.getElementById('sportBtn');if(!btn)
 let _sportDDOpen=false;
 function toggleSportDropdown(e){e.stopPropagation();_sportDDOpen=!_sportDDOpen;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display=_sportDDOpen?'block':'none';}
 document.addEventListener('click',function(e){if(_sportDDOpen){const m=document.getElementById('sportMulti');if(!m||!m.contains(e.target)){_sportDDOpen=false;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display='none';}}});
-function setActivity(v){activityFilter=v;recentPage=0;render();}
-function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
-
-loadData();
-</script>
-</body>
-</html>
-+a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'
-function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
-function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
-function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
-function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
-
-// ─── Controls ─────────────────────────────────────────────────────
-function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
-function pad2(n){return String(n).padStart(2,'0');}
-function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
-function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
-function setPeriodCustom(btn){
-  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('customRange').classList.add('active');
-  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
-  to.max=from.max=toInputDate(now);
-  if(!to.value) to.value=toInputDate(now);
-  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
-  applyCustomRange(); // show the default/last range immediately
-}
-function applyCustomRange(){
-  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
-  const err=document.getElementById('customRangeErr');
-  if(!fv||!tv){err.style.display='inline';return;}
-  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
-  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
-  if(lo>hi){err.style.display='inline';return;}
-  err.style.display='none';
-  customStart=lo;customEnd=hi;period='custom';recentPage=0;
-  document.getElementById('subCustom').textContent=customRangeText();
-  render();
-}
-function setBookie(v){bookieFilter=v;recentPage=0;render();}
-function setBowler(v){bowlerFilter=v;recentPage=0;render();}
-function setTipster(v){tipsterFilter=v;recentPage=0;render();}
-function setSport(v){sportFilter=v;recentPage=0;render();}
-function setActivity(v){activityFilter=v;recentPage=0;render();}
-function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
-
-loadData();
-</script>
-</body>
-</html>
-+a.toFixed(2);return r<0?'-'+s:s;}
-function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
-function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
-function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
-function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
-
-// ─── Controls ─────────────────────────────────────────────────────
-function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
-function pad2(n){return String(n).padStart(2,'0');}
-function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
-function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
-function setPeriodCustom(btn){
-  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('customRange').classList.add('active');
-  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
-  to.max=from.max=toInputDate(now);
-  if(!to.value) to.value=toInputDate(now);
-  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
-  applyCustomRange(); // show the default/last range immediately
-}
-function applyCustomRange(){
-  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
-  const err=document.getElementById('customRangeErr');
-  if(!fv||!tv){err.style.display='inline';return;}
-  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
-  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
-  if(lo>hi){err.style.display='inline';return;}
-  err.style.display='none';
-  customStart=lo;customEnd=hi;period='custom';recentPage=0;
-  document.getElementById('subCustom').textContent=customRangeText();
-  render();
-}
-function setBookie(v){bookieFilter=v;recentPage=0;render();}
-function setBowler(v){bowlerFilter=v;recentPage=0;render();}
-function setTipster(v){tipsterFilter=v;recentPage=0;render();}
-function setSport(v){sportFilter=v;recentPage=0;render();}
-function setActivity(v){activityFilter=v;recentPage=0;render();}
-function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
-
-loadData();
-</script>
-</body>
-</html>
-+a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
-function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
-function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
-function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
-
-// ─── Controls ─────────────────────────────────────────────────────
-function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
-function pad2(n){return String(n).padStart(2,'0');}
-function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
-function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
-function setPeriodCustom(btn){
-  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('customRange').classList.add('active');
-  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
-  to.max=from.max=toInputDate(now);
-  if(!to.value) to.value=toInputDate(now);
-  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
-  applyCustomRange(); // show the default/last range immediately
-}
-function applyCustomRange(){
-  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
-  const err=document.getElementById('customRangeErr');
-  if(!fv||!tv){err.style.display='inline';return;}
-  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
-  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
-  if(lo>hi){err.style.display='inline';return;}
-  err.style.display='none';
-  customStart=lo;customEnd=hi;period='custom';recentPage=0;
-  document.getElementById('subCustom').textContent=customRangeText();
-  render();
-}
-function setBookie(v){bookieFilter=v;recentPage=0;render();}
-function setBowler(v){bowlerFilter=v;recentPage=0;render();}
-function setTipster(v){tipsterFilter=v;recentPage=0;render();}
-function setSport(v){sportFilter=v==='All'?new Set():new Set([v]);recentPage=0;render();}
-function toggleSport(v){if(v==='All'){sportFilter.clear();}else if(sportFilter.has(v)){sportFilter.delete(v);}else{sportFilter.add(v);}updateSportBtn();recentPage=0;render();}
-function updateSportBtn(){const btn=document.getElementById('sportBtn');if(!btn)return;btn.textContent=(sportFilter.size===0?'All Sports':[...sportFilter].join(', '))+' ▾';}
-let _sportDDOpen=false;
-function toggleSportDropdown(e){e.stopPropagation();_sportDDOpen=!_sportDDOpen;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display=_sportDDOpen?'block':'none';}
-document.addEventListener('click',function(e){if(_sportDDOpen){const m=document.getElementById('sportMulti');if(!m||!m.contains(e.target)){_sportDDOpen=false;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display='none';}}});
-function setActivity(v){activityFilter=v;recentPage=0;render();}
-function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
-
-loadData();
-</script>
-</body>
-</html>
-+a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'
-function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
-function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
-function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
-function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
-
-// ─── Controls ─────────────────────────────────────────────────────
-function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
-function pad2(n){return String(n).padStart(2,'0');}
-function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
-function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
-function setPeriodCustom(btn){
-  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('customRange').classList.add('active');
-  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
-  to.max=from.max=toInputDate(now);
-  if(!to.value) to.value=toInputDate(now);
-  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
-  applyCustomRange(); // show the default/last range immediately
-}
-function applyCustomRange(){
-  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
-  const err=document.getElementById('customRangeErr');
-  if(!fv||!tv){err.style.display='inline';return;}
-  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
-  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
-  if(lo>hi){err.style.display='inline';return;}
-  err.style.display='none';
-  customStart=lo;customEnd=hi;period='custom';recentPage=0;
-  document.getElementById('subCustom').textContent=customRangeText();
-  render();
-}
-function setBookie(v){bookieFilter=v;recentPage=0;render();}
-function setBowler(v){bowlerFilter=v;recentPage=0;render();}
-function setTipster(v){tipsterFilter=v;recentPage=0;render();}
-function setSport(v){sportFilter=v;recentPage=0;render();}
-function setActivity(v){activityFilter=v;recentPage=0;render();}
-function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
-
-loadData();
-</script>
-</body>
-</html>
-+a.toFixed(2);return r<0?'-'+s:s;}
-function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
-function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
-function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
-function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
-
-// ─── Controls ─────────────────────────────────────────────────────
-function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
-function pad2(n){return String(n).padStart(2,'0');}
-function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
-function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
-function setPeriodCustom(btn){
-  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('customRange').classList.add('active');
-  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
-  to.max=from.max=toInputDate(now);
-  if(!to.value) to.value=toInputDate(now);
-  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
-  applyCustomRange(); // show the default/last range immediately
-}
-function applyCustomRange(){
-  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
-  const err=document.getElementById('customRangeErr');
-  if(!fv||!tv){err.style.display='inline';return;}
-  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
-  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
-  if(lo>hi){err.style.display='inline';return;}
-  err.style.display='none';
-  customStart=lo;customEnd=hi;period='custom';recentPage=0;
-  document.getElementById('subCustom').textContent=customRangeText();
-  render();
-}
-function setBookie(v){bookieFilter=v;recentPage=0;render();}
-function setBowler(v){bowlerFilter=v;recentPage=0;render();}
-function setTipster(v){tipsterFilter=v;recentPage=0;render();}
-function setSport(v){sportFilter=v;recentPage=0;render();}
-function setActivity(v){activityFilter=v;recentPage=0;render();}
-function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
-
-loadData();
-</script>
-</body>
-</html>
-+a.toFixed(2);return r<0?'-'+s:s;}
-function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
-function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
-function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
-function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
-
-// ─── Controls ─────────────────────────────────────────────────────
-function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
-function pad2(n){return String(n).padStart(2,'0');}
-function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
-function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
-function setPeriodCustom(btn){
-  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('customRange').classList.add('active');
-  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
-  to.max=from.max=toInputDate(now);
-  if(!to.value) to.value=toInputDate(now);
-  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
-  applyCustomRange(); // show the default/last range immediately
-}
-function applyCustomRange(){
-  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
-  const err=document.getElementById('customRangeErr');
-  if(!fv||!tv){err.style.display='inline';return;}
-  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
-  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
-  if(lo>hi){err.style.display='inline';return;}
-  err.style.display='none';
-  customStart=lo;customEnd=hi;period='custom';recentPage=0;
-  document.getElementById('subCustom').textContent=customRangeText();
-  render();
-}
-function setBookie(v){bookieFilter=v;recentPage=0;render();}
-function setBowler(v){bowlerFilter=v;recentPage=0;render();}
-function setTipster(v){tipsterFilter=v;recentPage=0;render();}
-function setSport(v){sportFilter=v==='All'?new Set():new Set([v]);recentPage=0;render();}
-function toggleSport(v){if(v==='All'){sportFilter.clear();}else if(sportFilter.has(v)){sportFilter.delete(v);}else{sportFilter.add(v);}updateSportBtn();recentPage=0;render();}
-function updateSportBtn(){const btn=document.getElementById('sportBtn');if(!btn)return;btn.textContent=(sportFilter.size===0?'All Sports':[...sportFilter].join(', '))+' ▾';}
-let _sportDDOpen=false;
-function toggleSportDropdown(e){e.stopPropagation();_sportDDOpen=!_sportDDOpen;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display=_sportDDOpen?'block':'none';}
-document.addEventListener('click',function(e){if(_sportDDOpen){const m=document.getElementById('sportMulti');if(!m||!m.contains(e.target)){_sportDDOpen=false;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display='none';}}});
-function setActivity(v){activityFilter=v;recentPage=0;render();}
-function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
-
-loadData();
-</script>
-</body>
-</html>
-+a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'
-function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
-function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
-function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
-function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
-
-// ─── Controls ─────────────────────────────────────────────────────
-function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
-function pad2(n){return String(n).padStart(2,'0');}
-function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
-function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
-function setPeriodCustom(btn){
-  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('customRange').classList.add('active');
-  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
-  to.max=from.max=toInputDate(now);
-  if(!to.value) to.value=toInputDate(now);
-  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
-  applyCustomRange(); // show the default/last range immediately
-}
-function applyCustomRange(){
-  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
-  const err=document.getElementById('customRangeErr');
-  if(!fv||!tv){err.style.display='inline';return;}
-  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
-  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
-  if(lo>hi){err.style.display='inline';return;}
-  err.style.display='none';
-  customStart=lo;customEnd=hi;period='custom';recentPage=0;
-  document.getElementById('subCustom').textContent=customRangeText();
-  render();
-}
-function setBookie(v){bookieFilter=v;recentPage=0;render();}
-function setBowler(v){bowlerFilter=v;recentPage=0;render();}
-function setTipster(v){tipsterFilter=v;recentPage=0;render();}
-function setSport(v){sportFilter=v;recentPage=0;render();}
-function setActivity(v){activityFilter=v;recentPage=0;render();}
-function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
-
-loadData();
-</script>
-</body>
-</html>
-+a.toFixed(2);return r<0?'-'+s:s;}
-function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
-function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
-function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
-function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
-
-// ─── Controls ─────────────────────────────────────────────────────
-function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
-function pad2(n){return String(n).padStart(2,'0');}
-function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
-function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
-function setPeriodCustom(btn){
-  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('customRange').classList.add('active');
-  const from=document.getElementById('customFrom'),to=document.getElementById('customTo'),now=new Date();
-  to.max=from.max=toInputDate(now);
-  if(!to.value) to.value=toInputDate(now);
-  if(!from.value){const d=new Date();d.setDate(d.getDate()-28);from.value=toInputDate(d);}
-  applyCustomRange(); // show the default/last range immediately
-}
-function applyCustomRange(){
-  const fv=document.getElementById('customFrom').value,tv=document.getElementById('customTo').value;
-  const err=document.getElementById('customRangeErr');
-  if(!fv||!tv){err.style.display='inline';return;}
-  const[fy,fm,fd]=fv.split('-').map(Number),[ty,tm,td]=tv.split('-').map(Number);
-  const lo=new Date(fy,fm-1,fd,0,0,0,0),hi=new Date(ty,tm-1,td,23,59,59,999);
-  if(lo>hi){err.style.display='inline';return;}
-  err.style.display='none';
-  customStart=lo;customEnd=hi;period='custom';recentPage=0;
-  document.getElementById('subCustom').textContent=customRangeText();
-  render();
-}
-function setBookie(v){bookieFilter=v;recentPage=0;render();}
-function setBowler(v){bowlerFilter=v;recentPage=0;render();}
-function setTipster(v){tipsterFilter=v;recentPage=0;render();}
-function setSport(v){sportFilter=v;recentPage=0;render();}
 function setActivity(v){activityFilter=v;recentPage=0;render();}
 function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
 
