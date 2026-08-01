@@ -330,7 +330,7 @@ const SETTINGS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQogRvsqn
 const HYP_URL = null;
 
 // ─── Activity Classification ──────────────────────────────────────
-const ACCOUNT_ACTS = new Set(['deposit','withdrawal','adjustment','bonus credit','warm','limited','gubbed','semi-gubbed']);
+const ACCOUNT_ACTS = new Set(['deposit','withdrawal','bonus credit','adjustment','bonus credit','warm','limited','gubbed','semi-gubbed']);
 const PROMO_FILTER_ACTS = new Set(['promo','qualifying']);
 const EXCLUDE_FROM_STATS = new Set(['deposit','withdrawal','bonus credit','adjustment','warm','limited','gubbed','semi-gubbed']);
 const STATUS_COLORS = {'warm':'#3fb950','semi-gubbed':'#ff8a80','gubbed':'#ef5350','limited':'#b71c1c'};
@@ -906,11 +906,11 @@ function buildRecentFeed(bets,hyp){
   const bsrc=isHB?[]:bets.filter(b=>isStatBet(b)&&b.stake>0&&actMatch(b)
     &&(bowlerFilter==='All'||b.bowler===bowlerFilter)
     &&(tipsterFilter==='All'||b.tipster===tipsterFilter)
-    &&(sportFilter==='All'||b.sport===sportFilter)
+    &&(sportFilter.size===0||sportFilter.has(b.sport))
     &&(bookieFilter==='All'||b.bookie===bookieFilter));
   // Hyperbot (Promo, no bowler/sport) only shows when nothing narrows it out.
   const actAllowsHyp=activityFilter==='All'||activityFilter.toLowerCase()==='promo';
-  const hsrc=(isHB||(tipsterFilter==='All'&&bowlerFilter==='All'))&&actAllowsHyp&&sportFilter==='All'?hyp:[];
+  const hsrc=(isHB||(tipsterFilter==='All'&&bowlerFilter==='All'))&&actAllowsHyp&&sportFilter.size===0?hyp:[];
   // When a custom date range is active, constrain the feed to that range.
   const inRange=b=>period!=='custom'||(b.date>=customStart&&b.date<=customEnd);
   const all=[...bsrc,...hsrc].filter(inRange).sort((a,b)=>b.date-a.date).slice(0,RECENT_MAX);
