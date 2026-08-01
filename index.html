@@ -79,7 +79,7 @@ nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;h
 .filter-pill.bookie{background:rgba(56,189,248,.15);color:#38bdf8;border:1px solid rgba(56,189,248,.3);}
 .filter-pill.bowler{background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3);}
 .filter-pill.tipster{background:rgba(126,87,194,.15);color:var(--purple);border:1px solid rgba(126,87,194,.3);}
-.filter-pill.sport{background:rgba(240,165,0,.15);color:#f0a500;border:1px solid rgba(240,165,0,.3);}
+.filter-pill.sport{background:rgba(240,165,0,.15);color:#f0a500;border:1px solid rgba(240,165,0,.3);}.sport-multi{position:relative;display:inline-block;}.sport-btn{cursor:pointer;text-align:left;}.sport-dropdown{position:absolute;top:calc(100% + 4px);left:0;background:#161b27;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px;z-index:9999;min-width:150px;max-height:240px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.4);}.sport-check-item{display:flex;align-items:center;gap:8px;padding:5px 8px;cursor:pointer;border-radius:5px;font-size:12px;color:#e2e8f0;white-space:nowrap;user-select:none;}.sport-check-item:hover{background:rgba(255,255,255,.06);}.sport-check-item input[type=checkbox]{accent-color:#a78bfa;cursor:pointer;width:13px;height:13px;flex-shrink:0;}
 .filter-pill.activity{background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.3);}
 .filter-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
 .at-banner{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
@@ -161,17 +161,17 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
 <div class="summary-panel" id="summaryPanel">
   <div class="panel-header">
     <div class="panel-title-wrap">
-      <div class="panel-title">ð Summary Statistics</div>
+      <div class="panel-title">📊 Summary Statistics</div>
       <div class="panel-sub">Live from Google Sheets</div>
     </div>
-    <button class="panel-close" onclick="closePanel()">â</button>
+    <button class="panel-close" onclick="closePanel()">✕</button>
   </div>
   <div class="panel-tabs">
     <button class="panel-tab active" onclick="switchPanelTab('bookie',this)">Bookmaker Summary</button>
     <button class="panel-tab" onclick="switchPanelTab('bowler',this)">Bowler Summary</button>
-    <button class="panel-tab" onclick="switchPanelTab('matrix',this)">Bowler Ã Bookie</button>
+    <button class="panel-tab" onclick="switchPanelTab('matrix',this)">Bowler × Bookie</button>
   </div>
-  <button class="panel-refresh-btn" onclick="loadData();closePanel();">â» Refresh Dashboard Data</button>
+  <button class="panel-refresh-btn" onclick="loadData();closePanel();">↻ Refresh Dashboard Data</button>
   <div class="panel-body" id="panelBody">
     <div style="text-align:center;color:var(--muted);font-size:12px;padding:30px;">Loading...</div>
   </div>
@@ -204,9 +204,10 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
     </div>
     <div class="nav-group">
       <span class="nav-label">Sport</span>
-      <select class="nav-select" id="sportSelect" onchange="setSport(this.value)">
-        <option value="All">All Sports</option>
-      </select>
+      <div class="sport-multi" id="sportMulti">
+        <button class="nav-select sport-btn" id="sportBtn" onclick="toggleSportDropdown(event)">All Sports ▾</button>
+        <div class="sport-dropdown" id="sportDropdown" style="display:none"></div>
+      </div>
     </div>
     <div class="nav-group">
       <span class="nav-label">Bet Type</span>
@@ -221,7 +222,7 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
         <option value="SNR Bonus">SNR Bonus</option>
       </select>
     </div>
-    <button class="summary-btn" onclick="openPanel()">ð Summary Statistics</button>
+    <button class="summary-btn" onclick="openPanel()">📊 Summary Statistics</button>
   </div>
 </nav>
 
@@ -237,16 +238,16 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
   </div>
 
   <div class="at-banner">
-    <div class="at-card"><div class="at-label">All Time Profit</div><div class="at-val c-green" id="atProfit">â</div></div>
-    <div class="at-card"><div class="at-label">All Time ROI</div><div class="at-val c-green" id="atROI">â</div></div>
-    <div class="at-card"><div class="at-label">All Time Turnover</div><div class="at-val c-purple" id="atTurnover">â</div></div>
-    <div class="at-card"><div class="at-label">All Time Units</div><div class="at-val c-green" id="atUnits">â</div></div>
+    <div class="at-card"><div class="at-label">All Time Profit</div><div class="at-val c-green" id="atProfit">—</div></div>
+    <div class="at-card"><div class="at-label">All Time ROI</div><div class="at-val c-green" id="atROI">—</div></div>
+    <div class="at-card"><div class="at-label">All Time Turnover</div><div class="at-val c-purple" id="atTurnover">—</div></div>
+    <div class="at-card"><div class="at-label">All Time Units</div><div class="at-val c-green" id="atUnits">—</div></div>
   </div>
 
   <div class="ptabs">
     <button class="ptab" onclick="setPeriod(1,this)"><span class="ptab-main">DAILY</span><span class="ptab-sub" id="sub1">Last 24 hours</span></button>
-    <button class="ptab active" onclick="setPeriod(7,this)"><span class="ptab-main">LAST 7 DAYS</span><span class="ptab-sub" id="sub7">â</span></button>
-    <button class="ptab" onclick="setPeriod(28,this)"><span class="ptab-main">LAST 28 DAYS</span><span class="ptab-sub" id="sub28">â</span></button>
+    <button class="ptab active" onclick="setPeriod(7,this)"><span class="ptab-main">LAST 7 DAYS</span><span class="ptab-sub" id="sub7">—</span></button>
+    <button class="ptab" onclick="setPeriod(28,this)"><span class="ptab-main">LAST 28 DAYS</span><span class="ptab-sub" id="sub28">—</span></button>
     <button class="ptab" onclick="setPeriod(0,this)"><span class="ptab-main">ALL TIME</span><span class="ptab-sub">INCEPTION</span></button>
     <button class="ptab" id="ptabCustom" onclick="setPeriodCustom(this)"><span class="ptab-main">CUSTOM</span><span class="ptab-sub" id="subCustom">Pick a range</span></button>
   </div>
@@ -255,28 +256,28 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
     <label>From <input type="date" id="customFrom"></label>
     <label>To <input type="date" id="customTo"></label>
     <button onclick="applyCustomRange()">Apply</button>
-    <span id="customRangeErr" style="font-size:11px;color:var(--red);display:none;">Pick both dates (From â¤ To)</span>
+    <span id="customRangeErr" style="font-size:11px;color:var(--red);display:none;">Pick both dates (From ≤ To)</span>
   </div>
 
   <div class="hero">
     <div>
-      <div class="hero-lbl">â¡ TURNOVER â <span id="heroLbl">LAST 7 DAYS</span></div>
-      <div class="hero-val" id="heroTurnover">â</div>
+      <div class="hero-lbl">⚡ TURNOVER — <span id="heroLbl">LAST 7 DAYS</span></div>
+      <div class="hero-val" id="heroTurnover">—</div>
     </div>
     <div class="hero-stats">
-      <div><div class="hs-lbl">Bets</div><div class="hs-val" id="heroBets">â</div></div>
-      <div><div class="hs-lbl">Avg Stake</div><div class="hs-val" id="heroAvg">â</div></div>
-      <div><div class="hs-lbl">Strike</div><div class="hs-val" id="heroStrike">â</div></div>
+      <div><div class="hs-lbl">Bets</div><div class="hs-val" id="heroBets">—</div></div>
+      <div><div class="hs-lbl">Avg Stake</div><div class="hs-val" id="heroAvg">—</div></div>
+      <div><div class="hs-lbl">Strike</div><div class="hs-val" id="heroStrike">—</div></div>
     </div>
   </div>
 
   <div class="stat-grid">
-    <div class="sc"><div class="sc-lbl">Profit</div><div class="sc-val c-green" id="scProfit">â</div></div>
-    <div class="sc"><div class="sc-lbl" id="scROIlbl">ROI</div><div class="sc-val c-green" id="scROI">â</div></div>
-    <div class="sc"><div class="sc-lbl">Units Gained</div><div class="sc-val c-purple" id="scUnits">â</div></div>
-    <div class="sc"><div class="sc-lbl">Profit / Bet</div><div class="sc-val c-green" id="scPPB">â</div></div>
-    <div class="sc"><div class="sc-lbl">W / L</div><div class="sc-val c-dim" id="scWL">â</div></div>
-    <div class="sc"><div class="sc-lbl">Avg Odds</div><div class="sc-val c-purple" id="scAvgOdds">â</div></div>
+    <div class="sc"><div class="sc-lbl">Profit</div><div class="sc-val c-green" id="scProfit">—</div></div>
+    <div class="sc"><div class="sc-lbl" id="scROIlbl">ROI</div><div class="sc-val c-green" id="scROI">—</div></div>
+    <div class="sc"><div class="sc-lbl">Units Gained</div><div class="sc-val c-purple" id="scUnits">—</div></div>
+    <div class="sc"><div class="sc-lbl">Profit / Bet</div><div class="sc-val c-green" id="scPPB">—</div></div>
+    <div class="sc"><div class="sc-lbl">W / L</div><div class="sc-val c-dim" id="scWL">—</div></div>
+    <div class="sc"><div class="sc-lbl">Avg Odds</div><div class="sc-val c-purple" id="scAvgOdds">—</div></div>
   </div>
 
   <div class="chart-card">
@@ -290,7 +291,7 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
   </div>
 
   <div class="tbl-card">
-    <div class="tbl-title" id="tblTitle">Tipster Breakdown â Last 7 Days</div>
+    <div class="tbl-title" id="tblTitle">Tipster Breakdown — Last 7 Days</div>
     <div class="tbl-wrap">
       <table>
         <thead><tr>
@@ -304,7 +305,7 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
 
   <div class="tbl-card" style="margin-top:14px;">
     <div class="tbl-title" style="display:flex;align-items:center;justify-content:space-between;">
-      <span>ð Recent Bets</span>
+      <span>🕐 Recent Bets</span>
       <span id="lastUpdatedFeed" style="font-size:10px;color:var(--muted);"></span>
     </div>
     <div class="tbl-wrap">
@@ -322,29 +323,29 @@ td:first-child{text-align:left;font-weight:600;color:var(--text);}
 </div>
 
 <script>
-// âââ URLs ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── URLs ────────────────────────────────────────────────────────
 // BETS_URL: main bet tracker tab. If this URL loads the wrong tab, add ?gid=XXXXXXXX&single=true&output=csv
 const BETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQogRvsqniNyhT5UakNVHyNQCPLehYLrl3xpe8djB3_NMVSk__9ACVyfp1izGVYHUQVCDRYa3koJV-/pub?output=csv';
 const SETTINGS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQogRvsqniNyhT5UakNVHyNQCPLehYLrl3xpe8djB3_NMVSk__9ACVyfp1izGVYHUQVCDRYa3koJV-/pub?output=csv';
 const HYP_URL = null;
 
-// âââ Activity Classification ââââââââââââââââââââââââââââââââââââââ
+// ─── Activity Classification ──────────────────────────────────────
 const ACCOUNT_ACTS = new Set(['deposit','withdrawal','adjustment','bonus credit','warm','limited','gubbed','semi-gubbed']);
 const PROMO_FILTER_ACTS = new Set(['promo','qualifying']);
 const EXCLUDE_FROM_STATS = new Set(['deposit','withdrawal','bonus credit','adjustment','warm','limited','gubbed','semi-gubbed']);
 const STATUS_COLORS = {'warm':'#3fb950','semi-gubbed':'#ff8a80','gubbed':'#ef5350','limited':'#b71c1c'};
 
-// âââ State âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── State ───────────────────────────────────────────────────────
 let allBets=[], allHyp=[], settingsData={}, statusMap={}, bonusMap={};
-let period=7, tipsterFilter='All', activityFilter='All', bowlerFilter='All', sportFilter='All', bookieFilter='All';
+let period=7, tipsterFilter='All', activityFilter='All', bowlerFilter='All', sportFilter=new Set(), bookieFilter='All';
 let customStart=null, customEnd=null; // custom date range (when period==='custom')
 let currentPanelTab='bookie';
-let matrixShowAll=false; // Bowler Ã Bookie: false=active accounts only, true=all accounts
-let matrixBowlerFilter='All', matrixBookieFilter='All'; // Bowler Ã Bookie in-tab filters
-let matrixCashSort=null; // null=neutral, 'asc'=lowâhigh, 'desc'=highâlow
+let matrixShowAll=false; // Bowler × Bookie: false=active accounts only, true=all accounts
+let matrixBowlerFilter='All', matrixBookieFilter='All'; // Bowler × Bookie in-tab filters
+let matrixCashSort=null; // null=neutral, 'asc'=low→high, 'desc'=high→low
 let recentPage=0; const RECENT_PER_PAGE=15, RECENT_MAX=150; // Recent Bets pagination
 
-// âââ CSV Parsing âââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── CSV Parsing ─────────────────────────────────────────────────
 function splitLine(line){
   const vals=[];let cur='',inQ=false;
   for(let i=0;i<line.length;i++){
@@ -391,7 +392,7 @@ function parseSettings(raw){
   return result;
 }
 
-// âââ Data Cleaning âââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Data Cleaning ───────────────────────────────────────────────
 function cleanNum(s){
   if(!s||s==='-'||s===''||s==='N/A') return 0;
   const neg=s.includes('(')||(s.trim().startsWith('-')&&s.trim().length>1);
@@ -413,7 +414,7 @@ function cutoff(days){
 }
 function fmtDateShort(d){return d.toLocaleDateString('en-AU',{day:'numeric',month:'short'});}
 
-// âââ Bet Parsing âââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Bet Parsing ─────────────────────────────────────────────────
 const RESULTED=new Set(['w','l','1','2','v','void','bonus']);
 function parseBets(rows){
   return rows.map(r=>{
@@ -440,7 +441,7 @@ function parseBets(rows){
 }
 // Status rows (Warm/Semi-Gubbed/Gubbed/Limited) carry no money, so parseBets
 // filters them out. Build a separate per bowler+bookie status lookup straight
-// from the raw rows â most recent date wins.
+// from the raw rows — most recent date wins.
 function parseStatuses(rows){
   const map={};
   rows.forEach(r=>{
@@ -455,13 +456,13 @@ function parseStatuses(rows){
   });
   return map;
 }
-// The sheet has no "NET BONUS" column â bonus movements live in the (rounded)
-// "Bonus Bal Î" column. We recompute the true bonus balance per bowler+bookie
+// The sheet has no "NET BONUS" column — bonus movements live in the (rounded)
+// "Bonus Bal Δ" column. We recompute the true bonus balance per bowler+bookie
 // straight from the full-precision STAKE column, mirroring the sheet's own rule:
-//   Bonus Credit            â + stake (signed; negatives write bonus off)
-//   any settled SNR Bonus   â â stake (W / L / Bonus / 1 / 2; voids = 0)
+//   Bonus Credit            → + stake (signed; negatives write bonus off)
+//   any settled SNR Bonus   → − stake (W / L / Bonus / 1 / 2; voids = 0)
 //   result "Bonus" (a won
-//     bonus, non-deposit)   â + stake
+//     bonus, non-deposit)   → + stake
 // Kept separate from allBets so it never touches the P&L stat pipeline.
 const BONUS_SETTLED=new Set(['w','l','bonus','1','2']);
 function parseBonusBalances(rows){
@@ -498,9 +499,9 @@ function parseHyp(rows){
   }).filter(r=>r.date);
 }
 
-// âââ Filtering & Stats âââââââââââââââââââââââââââââââââââââââââââ
+// ─── Filtering & Stats ───────────────────────────────────────────
 function isStatBet(b){return!EXCLUDE_FROM_STATS.has(b.activity.toLowerCase());}
-function filterBets(bets,days,tip,act,bowl='All',sport='All',bk='All'){
+function filterBets(bets,days,tip,act,bowl='All',sport=new Set(),bk='All'){
   let lo=null,hi=null;
   if(days==='custom'){lo=customStart;hi=customEnd;}
   else if(days>0){lo=cutoff(days);}
@@ -509,7 +510,7 @@ function filterBets(bets,days,tip,act,bowl='All',sport='All',bk='All'){
     if(hi&&b.date>hi) return false;
     if(tip!=='All'&&b.tipster!==tip) return false;
     if(bowl!=='All'&&b.bowler!==bowl) return false;
-    if(sport!=='All'&&b.sport!==sport) return false;
+    if(sport.size>0&&!sport.has(b.sport)) return false;
     if(bk!=='All'&&b.bookie!==bk) return false;
     if(act!=='All'){
       const al=act.toLowerCase(),bl=b.activity.toLowerCase();
@@ -533,12 +534,12 @@ function getLatestTotalProfit(){
   return vals.length?vals[0].totalProfit:null;
 }
 
-// âââ Data Loading ââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Data Loading ────────────────────────────────────────────────
 async function loadData(){
   setLoad(0,'Connecting...');showLoad(true);showErr('');
   try{
     setLoad(15,'Fetching bets...');
-    const bRaw=await fetch(BETS_URL).then(r=>{if(!r.ok)throw new Error('Bets: HTTP '+r.status);return r.text();});
+    const bRaw=await fetchWithRetry(BETS_URL).then(r=>{if(!r.ok)throw new Error('Bets: HTTP '+r.status);return r.text();});
     setLoad(40,'Fetching settings...');
     const sRaw=SETTINGS_URL!==BETS_URL?await fetch(SETTINGS_URL).then(r=>r.ok?r.text():null).catch(()=>null):bRaw;
     const hRaw=HYP_URL?await fetch(HYP_URL).then(r=>r.ok?r.text():null).catch(()=>null):null;
@@ -556,11 +557,12 @@ async function loadData(){
   }catch(e){showErr('Could not load: '+e.message);showLoad(false);console.error(e);}
 }
 function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+async function fetchWithRetry(url,ms=25000,tries=2){for(let i=0;i<tries;i++){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);try{const r=await fetch(url,{signal:c.signal});clearTimeout(t);return r;}catch(e){clearTimeout(t);if(i===tries-1)throw e;setLoad(20,'Retrying...');await wait(2000);}}}
 function setLoad(p,m){document.getElementById('loadBar').style.width=p+'%';document.getElementById('loadStatus').textContent=m;}
 function showLoad(on){document.getElementById('loadingScreen').classList.toggle('hidden',!on);}
 function showErr(m){const e=document.getElementById('errMsg');e.style.display=m?'block':'none';if(m)e.textContent=m;}
 
-// âââ Summary Panel âââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Summary Panel ───────────────────────────────────────────────
 function openPanel(){
   document.getElementById('summaryPanel').classList.add('open');
   document.getElementById('panelOverlay').classList.add('open');
@@ -603,7 +605,7 @@ function renderBookmakerSummary(){
   const rows=Object.entries(map).map(([bk,d])=>({bk,...d})).sort((a,b)=>b.cashBal-a.cashBal);
   if(!rows.length) return '<div style="color:var(--muted);text-align:center;padding:30px;font-size:12px;">No data loaded yet.</div>';
   const tc=rows.reduce((s,r)=>s+r.cashBal,0),tb=rows.reduce((s,r)=>s+r.bonusBal,0);
-  return`<div class="panel-section-title">All Bookmakers â Cash: ${fmt$(tc)} | Bonus: ${fmt$(tb)}</div>
+  return`<div class="panel-section-title">All Bookmakers — Cash: ${fmt$(tc)} | Bonus: ${fmt$(tb)}</div>
   <div class="panel-tbl-wrap"><table class="panel-tbl"><thead><tr>
     <th>BOOKMAKER</th><th>CASH BAL</th><th>BONUS BAL</th><th>NET P&L</th><th>BETS</th><th>DEP</th><th>WIT</th>
   </tr></thead><tbody>${rows.map(r=>`<tr>
@@ -630,7 +632,7 @@ function renderBowlerSummary(){
   const rows=Object.entries(map).map(([bw,d])=>({bw,...d})).sort((a,b)=>b.cashBal-a.cashBal);
   if(!rows.length) return '<div style="color:var(--muted);text-align:center;padding:30px;font-size:12px;">No data loaded yet.</div>';
   const tc=rows.reduce((s,r)=>s+r.cashBal,0),tb=rows.reduce((s,r)=>s+r.bonusBal,0);
-  return`<div class="panel-section-title">All Bowlers â Cash: ${fmt$(tc)} | Bonus: ${fmt$(tb)}</div>
+  return`<div class="panel-section-title">All Bowlers — Cash: ${fmt$(tc)} | Bonus: ${fmt$(tb)}</div>
   <div class="panel-tbl-wrap"><table class="panel-tbl"><thead><tr>
     <th>BOWLER</th><th>CASH BAL</th><th>BONUS BAL</th><th>NET P&L</th><th>BETS</th><th>DEPS</th><th>WITS</th>
   </tr></thead><tbody>${rows.map(r=>`<tr>
@@ -688,11 +690,11 @@ function renderBowlerBookieMatrix(){
   const bookieOpts=opt('All',matrixBookieFilter,'All Bookmakers')+allBookies.map(v=>opt(v,matrixBookieFilter)).join('');
   const header=`<div class="panel-section-title">${rows.length} ${matrixShowAll?'accounts (all)':'active accounts'}</div>
   <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;flex-wrap:wrap;">
-    <span style="font-size:11px;color:#3fb950;">â Warm</span>
-    <span style="font-size:11px;color:#ff8a80;">â Semi-Gubbed</span>
-    <span style="font-size:11px;color:#ef5350;">â Gubbed</span>
-    <span style="font-size:11px;color:#b71c1c;">â Limited</span>
-    <span style="font-size:11px;color:var(--muted);">â No status</span>
+    <span style="font-size:11px;color:#3fb950;">● Warm</span>
+    <span style="font-size:11px;color:#ff8a80;">● Semi-Gubbed</span>
+    <span style="font-size:11px;color:#ef5350;">● Gubbed</span>
+    <span style="font-size:11px;color:#b71c1c;">● Limited</span>
+    <span style="font-size:11px;color:var(--muted);">● No status</span>
     <label class="scope-toggle" style="margin-left:auto;" title="Active = positive balance only; All = every account">
       <input type="checkbox" ${matrixShowAll?'checked':''} onchange="toggleMatrixScope(this.checked)">
       <span class="scope-slider"></span>
@@ -704,7 +706,7 @@ function renderBowlerBookieMatrix(){
     <select class="nav-select" onchange="setMatrixBookie(this.value)">${bookieOpts}</select>
   </div>`;
   if(!rows.length) return header+'<div style="color:var(--muted);text-align:center;padding:30px;font-size:12px;">No accounts match these filters.</div>';
-  const cashIcon=matrixCashSort===null?'â':matrixCashSort==='asc'?'â':'â';
+  const cashIcon=matrixCashSort===null?'⇅':matrixCashSort==='asc'?'↑':'↓';
   const cashColor=matrixCashSort===null?'var(--muted)':'var(--purple)';
   return header+`
   <div class="panel-tbl-wrap"><table class="panel-tbl"><thead><tr>
@@ -728,7 +730,7 @@ function renderBowlerBookieMatrix(){
   }).join('')}</tbody></table></div>`;
 }
 
-// âââ Dropdowns âââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Dropdowns ───────────────────────────────────────────────────
 function buildOptions(){
   const sBowls=settingsData['BOWLERS']||[];
   const bowls=sBowls.length?sBowls:[...new Set(allBets.map(b=>b.bowler))].filter(Boolean).sort();
@@ -747,10 +749,9 @@ function buildOptions(){
 
   const sSports=settingsData['SPORTS']||[];
   const sports=sSports.length?sSports:[...new Set(allBets.map(b=>b.sport))].filter(Boolean).sort();
-  const spSel=document.getElementById('sportSelect'),prevSp=spSel.value;
-  spSel.innerHTML='<option value="All">All Sports</option>';
-  sports.forEach(sp=>{const o=document.createElement('option');o.value=o.textContent=sp;spSel.appendChild(o);});
-  if([...spSel.options].some(o=>o.value===prevSp)) spSel.value=prevSp;
+  const spDrop=document.getElementById('sportDropdown');
+  if(spDrop){spDrop.innerHTML='';const mkI=(lbl,val)=>{const el=document.createElement('label');el.className='sport-check-item';const cb=document.createElement('input');cb.type='checkbox';cb.checked=(val==='All'?sportFilter.size===0:sportFilter.has(val));cb.addEventListener('change',()=>toggleSport(val));el.appendChild(cb);el.appendChild(document.createTextNode(' '+lbl));spDrop.appendChild(el);};mkI('All Sports','All');sports.forEach(sp=>mkI(sp,sp));}
+  updateSportBtn();
 
   const bookies=[...new Set(allBets.map(b=>b.bookie))].filter(Boolean).sort();
   const bkSel=document.getElementById('bookieSelect'),prevBk=bkSel.value;
@@ -759,19 +760,19 @@ function buildOptions(){
   if([...bkSel.options].some(o=>o.value===prevBk)) bkSel.value=prevBk;
 }
 
-// âââ Filter Pill âââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Filter Pill ─────────────────────────────────────────────────
 function updateFilterBar(){
   const bar=document.getElementById('filterBar');
   const pbk=document.getElementById('pillBookie'),pb=document.getElementById('pillBowler'),pt=document.getElementById('pillTipster'),psp=document.getElementById('pillSport'),pa=document.getElementById('pillActivity');
-  bar.classList.toggle('active',bookieFilter!=='All'||bowlerFilter!=='All'||tipsterFilter!=='All'||sportFilter!=='All'||activityFilter!=='All');
-  if(bookieFilter!=='All'){pbk.style.display='inline-flex';pbk.textContent='ð  '+bookieFilter;}else pbk.style.display='none';
-  if(bowlerFilter!=='All'){pb.style.display='inline-flex';pb.textContent='ð³ '+bowlerFilter;}else pb.style.display='none';
-  if(tipsterFilter!=='All'){pt.style.display='inline-flex';pt.textContent='ð¤ '+tipsterFilter;}else pt.style.display='none';
-  if(sportFilter!=='All'){psp.style.display='inline-flex';psp.textContent='ð '+sportFilter;}else psp.style.display='none';
-  if(activityFilter!=='All'){pa.style.display='inline-flex';pa.textContent='ð· '+activityFilter;}else pa.style.display='none';
+  bar.classList.toggle('active',bookieFilter!=='All'||bowlerFilter!=='All'||tipsterFilter!=='All'||sportFilter.size>0||activityFilter!=='All');
+  if(bookieFilter!=='All'){pbk.style.display='inline-flex';pbk.textContent='🏠 '+bookieFilter;}else pbk.style.display='none';
+  if(bowlerFilter!=='All'){pb.style.display='inline-flex';pb.textContent='🎳 '+bowlerFilter;}else pb.style.display='none';
+  if(tipsterFilter!=='All'){pt.style.display='inline-flex';pt.textContent='👤 '+tipsterFilter;}else pt.style.display='none';
+  if(sportFilter.size>0){psp.style.display='inline-flex';psp.textContent='🏆 '+[...sportFilter].join(', ');}else psp.style.display='none';
+  if(activityFilter!=='All'){pa.style.display='inline-flex';pa.textContent='🏷 '+activityFilter;}else pa.style.display='none';
 }
 
-// âââ Main Render âââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Main Render ─────────────────────────────────────────────────
 function render(){
   updateFilterBar();
   const isHB=tipsterFilter==='Hyperbot';
@@ -792,8 +793,8 @@ function render(){
   setText('atUnits',fmtU(at.units));colorEl('atUnits',at.units);
 
   const now=new Date();
-  document.getElementById('sub7').textContent=fmtDateShort(cutoff(7))+' â '+fmtDateShort(now);
-  document.getElementById('sub28').textContent=fmtDateShort(cutoff(28))+' â '+fmtDateShort(now);
+  document.getElementById('sub7').textContent=fmtDateShort(cutoff(7))+' – '+fmtDateShort(now);
+  document.getElementById('sub28').textContent=fmtDateShort(cutoff(28))+' – '+fmtDateShort(now);
 
   let lbl,tlbl;
   if(period==='custom'){lbl=customRangeText();tlbl=lbl;}
@@ -804,7 +805,7 @@ function render(){
   setText('heroAvg',fmt$(s.avgStake));setText('heroStrike',fmtP(s.strike));
   setText('scProfit',fmt$(s.profit));colorEl('scProfit',s.profit);
   // For SNR (Stake-Not-Returned) bonus bets, "ROI" is really the bonus
-  // retention/conversion rate (cash extracted Ã· bonus face value) â relabel it.
+  // retention/conversion rate (cash extracted ÷ bonus face value) — relabel it.
   const snr=activityFilter==='SNR Bonus';
   setText('scROIlbl',snr?'Retention':'ROI');
   setText('thROI',snr?'RETENTION':'ROI');
@@ -812,8 +813,8 @@ function render(){
   setText('scUnits',fmtU(s.units));
   setText('scPPB',fmt$(s.ppb));colorEl('scPPB',s.ppb);
   document.getElementById('scWL').textContent=s.wins+'W  '+s.losses+'L';
-  setText('scAvgOdds',s.avgOdds>1?s.avgOdds.toFixed(2)+'x':'â');
-  setText('tblTitle','Tipster Breakdown â '+tlbl);
+  setText('scAvgOdds',s.avgOdds>1?s.avgOdds.toFixed(2)+'x':'—');
+  setText('tblTitle','Tipster Breakdown — '+tlbl);
   drawChart(bf,hf);
   buildMonthly([...filterBets(allBets,0,tipsterFilter,activityFilter,bowlerFilter,sportFilter,bookieFilter),...(showHyp?hf:[])]);
   buildTable(bf,hf);
@@ -826,7 +827,7 @@ function periodLabel(l){
   return'All Time';
 }
 
-// âââ Chart âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Chart ───────────────────────────────────────────────────────
 function drawChart(bets,hyp){
   const all=[...bets,...hyp].filter(b=>b.date&&isStatBet(b)&&!b.pending).sort((a,b)=>a.date-b.date);
   const svg=document.getElementById('chartSvg');svg.innerHTML='';
@@ -854,7 +855,7 @@ function drawChart(bets,hyp){
 function se(t){return document.createElementNS('http://www.w3.org/2000/svg',t);}
 function sa(el,a){Object.entries(a).forEach(([k,v])=>el.setAttribute(k,v));}
 
-// âââ Monthly Grid âââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Monthly Grid ─────────────────────────────────────────────────
 function buildMonthly(bets){
   const grid=document.getElementById('monthlyGrid');grid.innerHTML='';
   const mm={};
@@ -871,7 +872,7 @@ function buildMonthly(bets){
   });
 }
 
-// âââ Tipster Table ââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Tipster Table ────────────────────────────────────────────────
 function buildTable(bets,hyp){
   const tbody=document.getElementById('tblBody');tbody.innerHTML='';
   const tips=[...new Set(bets.map(b=>b.tipster))].sort();
@@ -880,18 +881,18 @@ function buildTable(bets,hyp){
     .sort((a,b)=>b.s.turnover-a.s.turnover)
     .forEach(({name,s})=>{
       const tr=document.createElement('tr');
-      tr.innerHTML=`<td>${name}</td><td class="c-purple">${fmt$(s.turnover)}</td><td>${s.bets}</td><td>${s.avgOdds>1?s.avgOdds.toFixed(2):'â'}</td><td><span class="roi-badge ${roiCls(s.roi)}">${fmtP(s.roi)}</span></td><td class="${s.units>=0?'c-green':'c-red'}">${fmtU(s.units)}</td><td class="${s.profit>=0?'c-green':'c-red'}">${fmt$(s.profit)}</td><td class="${s.ppb>=0?'c-green':'c-red'}">${fmt$(s.ppb)}</td><td>${fmtP(s.strike)}</td>`;
+      tr.innerHTML=`<td>${name}</td><td class="c-purple">${fmt$(s.turnover)}</td><td>${s.bets}</td><td>${s.avgOdds>1?s.avgOdds.toFixed(2):'—'}</td><td><span class="roi-badge ${roiCls(s.roi)}">${fmtP(s.roi)}</span></td><td class="${s.units>=0?'c-green':'c-red'}">${fmtU(s.units)}</td><td class="${s.profit>=0?'c-green':'c-red'}">${fmt$(s.profit)}</td><td class="${s.ppb>=0?'c-green':'c-red'}">${fmt$(s.ppb)}</td><td>${fmtP(s.strike)}</td>`;
       tbody.appendChild(tr);
     });
   if(hyp.length>0){
     const div=document.createElement('tr');div.className='hb-div';div.innerHTML='<td colspan="9"></td>';tbody.appendChild(div);
     const hs=calcStats(hyp);const hr=document.createElement('tr');
-    hr.innerHTML=`<td style="color:#a78bfa">â Hyperbot</td><td class="c-purple">${fmt$(hs.turnover)}</td><td>${hs.bets}</td><td>â</td><td><span class="roi-badge ${roiCls(hs.roi)}">${fmtP(hs.roi)}</span></td><td class="${hs.units>=0?'c-green':'c-red'}">${fmtU(hs.units)}</td><td class="${hs.profit>=0?'c-green':'c-red'}">${fmt$(hs.profit)}</td><td class="${hs.ppb>=0?'c-green':'c-red'}">${fmt$(hs.ppb)}</td><td>${fmtP(hs.strike)}</td>`;
+    hr.innerHTML=`<td style="color:#a78bfa">⚙ Hyperbot</td><td class="c-purple">${fmt$(hs.turnover)}</td><td>${hs.bets}</td><td>—</td><td><span class="roi-badge ${roiCls(hs.roi)}">${fmtP(hs.roi)}</span></td><td class="${hs.units>=0?'c-green':'c-red'}">${fmtU(hs.units)}</td><td class="${hs.profit>=0?'c-green':'c-red'}">${fmt$(hs.profit)}</td><td class="${hs.ppb>=0?'c-green':'c-red'}">${fmt$(hs.ppb)}</td><td>${fmtP(hs.strike)}</td>`;
     tbody.appendChild(hr);
   }
 }
 
-// âââ Recent Bets Feed âââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Recent Bets Feed ─────────────────────────────────────────────
 function buildRecentFeed(bets,hyp){
   const tbody=document.getElementById('recentBody');tbody.innerHTML='';
   const pager=document.getElementById('recentPager');
@@ -919,23 +920,23 @@ function buildRecentFeed(bets,hyp){
   const recent=all.slice(recentPage*RECENT_PER_PAGE,(recentPage+1)*RECENT_PER_PAGE);
   recent.forEach(b=>{
     const isWin=b.result==='w'||b.result==='1',isLoss=b.result==='l'||b.result==='2';
-    const ds=b.date?b.date.toLocaleDateString('en-AU',{day:'numeric',month:'short'}):'â';
-    const sel=(b._raw&&(b._raw['SELECTION']||b._raw['Selection']))||'â';
-    const bk=(b._raw&&(b._raw['BOOKIE']||b._raw['Bookie']))||b.bookie||'â';
+    const ds=b.date?b.date.toLocaleDateString('en-AU',{day:'numeric',month:'short'}):'—';
+    const sel=(b._raw&&(b._raw['SELECTION']||b._raw['Selection']))||'—';
+    const bk=(b._raw&&(b._raw['BOOKIE']||b._raw['Bookie']))||b.bookie||'—';
     const al=b.activity.toLowerCase();
     const ac=al==='promo'||al==='qualifying'?'rgba(167,139,250,.15);color:#a78bfa':al==='mug'?'rgba(240,165,0,.15);color:#f0a500':'rgba(63,185,80,.15);color:#3fb950';
     let rh;
-    if(b.pending) rh='<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:rgba(240,165,0,.15);color:#f0a500;">â³</span>';
+    if(b.pending) rh='<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:rgba(240,165,0,.15);color:#f0a500;">⏳</span>';
     else if(isWin) rh='<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:rgba(63,185,80,.15);color:var(--green);">W</span>';
     else if(isLoss) rh='<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:rgba(248,81,73,.15);color:var(--red);">L</span>';
     else rh='<span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:var(--bg4);color:var(--muted);">V</span>';
     const plColor=b.pending?'var(--muted)':isWin?'var(--green)':'var(--red)';
     const plText=b.pending?'Pending':fmt$(b.netCash);
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td style="color:var(--muted);font-size:11px;">${ds}</td><td style="font-weight:600;">${b.tipster}</td><td><span style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;background:${ac};">${b.activity||'â'}</span></td><td style="color:var(--dim);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${sel}</td><td style="color:var(--dim);font-size:11px;">${bk}</td><td style="color:var(--purple);">${b.odds>0?b.odds.toFixed(2):'â'}</td><td>${fmt$(b.stake)}</td><td>${rh}</td><td style="font-weight:600;color:${plColor};">${plText}</td>`;
+    tr.innerHTML=`<td style="color:var(--muted);font-size:11px;">${ds}</td><td style="font-weight:600;">${b.tipster}</td><td><span style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;background:${ac};">${b.activity||'—'}</span></td><td style="color:var(--dim);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${sel}</td><td style="color:var(--dim);font-size:11px;">${bk}</td><td style="color:var(--purple);">${b.odds>0?b.odds.toFixed(2):'—'}</td><td>${fmt$(b.stake)}</td><td>${rh}</td><td style="font-weight:600;color:${plColor};">${plText}</td>`;
     tbody.appendChild(tr);
   });
-  const ts=all[0].date?all[0].date.toLocaleDateString('en-AU',{day:'numeric',month:'short'}):'â';
+  const ts=all[0].date?all[0].date.toLocaleDateString('en-AU',{day:'numeric',month:'short'}):'—';
   document.getElementById('lastUpdatedFeed').textContent='Last bet: '+ts;
   renderRecentPager(totalPages);
 }
@@ -943,12 +944,12 @@ function renderRecentPager(totalPages){
   const pager=document.getElementById('recentPager');if(!pager)return;
   if(totalPages<=1){pager.innerHTML='';return;}
   const cur=recentPage;
-  let html=`<button ${cur===0?'disabled':''} onclick="setRecentPage(${cur-1})">â¹</button>`;
+  let html=`<button ${cur===0?'disabled':''} onclick="setRecentPage(${cur-1})">‹</button>`;
   pageWindow(cur,totalPages).forEach(p=>{
-    if(p==='gap') html+='<span class="pager-gap">â¦</span>';
+    if(p==='gap') html+='<span class="pager-gap">…</span>';
     else html+=`<button class="${p===cur?'active':''}" onclick="setRecentPage(${p})">${p+1}</button>`;
   });
-  html+=`<button ${cur===totalPages-1?'disabled':''} onclick="setRecentPage(${cur+1})">âº</button>`;
+  html+=`<button ${cur===totalPages-1?'disabled':''} onclick="setRecentPage(${cur+1})">›</button>`;
   pager.innerHTML=html;
 }
 function pageWindow(cur,total){
@@ -965,19 +966,19 @@ function pageWindow(cur,total){
 }
 function setRecentPage(p){recentPage=p;buildRecentFeed(allBets,allHyp);}
 
-// âââ Formatters âââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Formatters ───────────────────────────────────────────────────
 function roiCls(r){return r>2?'roi-pos':r<-2?'roi-neg':'roi-neu';}
-function fmt$(n){if(isNaN(n))return'â';const r=Math.round(n*100)/100;if(r===0)return'$0.00';const a=Math.abs(r);const s=a>=1000?'
-function fmtP(n){if(isNaN(n))return'â';return(n>=0?'+':'')+n.toFixed(1)+'%';}
-function fmtU(n){if(isNaN(n))return'â';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function fmt$(n){if(isNaN(n))return'—';const r=Math.round(n*100)/100;if(r===0)return'$0.00';const a=Math.abs(r);const s=a>=1000?'
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
 function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
 function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
 
-// âââ Controls âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Controls ─────────────────────────────────────────────────────
 function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
 function pad2(n){return String(n).padStart(2,'0');}
 function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
-function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' â '+fmtDateShort(customEnd):'CUSTOM';}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
 function setPeriodCustom(btn){
   document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
@@ -1003,7 +1004,12 @@ function applyCustomRange(){
 function setBookie(v){bookieFilter=v;recentPage=0;render();}
 function setBowler(v){bowlerFilter=v;recentPage=0;render();}
 function setTipster(v){tipsterFilter=v;recentPage=0;render();}
-function setSport(v){sportFilter=v;recentPage=0;render();}
+function setSport(v){sportFilter=v==='All'?new Set():new Set([v]);recentPage=0;render();}
+function toggleSport(v){if(v==='All'){sportFilter.clear();}else if(sportFilter.has(v)){sportFilter.delete(v);}else{sportFilter.add(v);}updateSportBtn();recentPage=0;render();}
+function updateSportBtn(){const btn=document.getElementById('sportBtn');if(!btn)return;btn.textContent=(sportFilter.size===0?'All Sports':[...sportFilter].join(', '))+' ▾';}
+let _sportDDOpen=false;
+function toggleSportDropdown(e){e.stopPropagation();_sportDDOpen=!_sportDDOpen;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display=_sportDDOpen?'block':'none';}
+document.addEventListener('click',function(e){if(_sportDDOpen){const m=document.getElementById('sportMulti');if(!m||!m.contains(e.target)){_sportDDOpen=false;const dd=document.getElementById('sportDropdown');if(dd)dd.style.display='none';}}});
 function setActivity(v){activityFilter=v;recentPage=0;render();}
 function cycleMatrixCashSort(){matrixCashSort=matrixCashSort===null?'asc':matrixCashSort==='asc'?'desc':null;renderPanelTab('matrix');}
 
@@ -1012,16 +1018,16 @@ loadData();
 </body>
 </html>
 +a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'
-function fmtP(n){if(isNaN(n))return'â';return(n>=0?'+':'')+n.toFixed(1)+'%';}
-function fmtU(n){if(isNaN(n))return'â';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
 function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
 function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
 
-// âââ Controls âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Controls ─────────────────────────────────────────────────────
 function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
 function pad2(n){return String(n).padStart(2,'0');}
 function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
-function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' â '+fmtDateShort(customEnd):'CUSTOM';}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
 function setPeriodCustom(btn){
   document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
@@ -1056,16 +1062,16 @@ loadData();
 </body>
 </html>
 +a.toFixed(2);return r<0?'-'+s:s;}
-function fmtP(n){if(isNaN(n))return'â';return(n>=0?'+':'')+n.toFixed(1)+'%';}
-function fmtU(n){if(isNaN(n))return'â';return(n>=0?'+':'')+n.toFixed(2)+'u';}
+function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
+function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
 function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
 function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classList.remove('c-green','c-red');e.classList.add(v>=0?'c-green':'c-red');}
 
-// âââ Controls âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Controls ─────────────────────────────────────────────────────
 function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
 function pad2(n){return String(n).padStart(2,'0');}
 function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
-function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' â '+fmtDateShort(customEnd):'CUSTOM';}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
 function setPeriodCustom(btn){
   document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
