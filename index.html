@@ -130,7 +130,7 @@ nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;h
 .tbl-title{font-size:12px;font-weight:500;color:var(--dim);margin-bottom:12px;}
 .tbl-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;}
-thead th{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;padding:6px 12px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap;font-weight:500;}
+thead th{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;padding:6px 12px;text-align:right;border-bottom:1px solid var(--border);white-space:nowraw;font-weight:500;}
 thead th:first-child{text-align:left;}
 tbody tr{border-bottom:1px solid #1a2235;}
 tbody tr:last-child{border-bottom:none;}
@@ -541,7 +541,7 @@ async function loadData(){
     setLoad(15,'Fetching bets...');
     const bRaw=await fetchWithRetry(BETS_URL).then(r=>{if(!r.ok)throw new Error('Bets: HTTP '+r.status);return r.text();});
     setLoad(40,'Fetching settings...');
-    const sRaw=SETTINGS_URL!==BETS_URL?await fetch(SETTINGS_URL..then(r=>r.ok?r.text():null).catch(()=>null):bRaw;
+    const sRaw=SETTINGS_URL!==BETS_URL?await fetch(SETTINGS_URL).then(r=>r.ok?r.text():null).catch(()=>null):bRaw;
     const hRaw=HYP_URL?await fetch(HYP_URL).then(r=>r.ok?r.text():null).catch(()=>null):null;
     setLoad(65,'Parsing...');
     const betRows=parseCSV(bRaw);
@@ -558,7 +558,7 @@ async function loadData(){
 }
 function wait(ms){return new Promise(r=>setTimeout(r,ms));}
 async function fetchWithRetry(url,ms=25000,tries=2){for(let i=0;i<tries;i++){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);try{const r=await fetch(url,{signal:c.signal});clearTimeout(t);return r;}catch(e){clearTimeout(t);if(i===tries-1)throw e;setLoad(20,'Retrying...');await wait(2000);}}}
-function setLoad(p,m){document.getElementById('loadBar').style.width=p+%'';document.getElementById('loadStatus').textContent=m;}
+function setLoad(p,m){document.getElementById('loadBar').style.width=p+'%';document.getElementById('loadStatus').textContent=m;}
 function showLoad(on){document.getElementById('loadingScreen').classList.toggle('hidden',!on);}
 function showErr(m){const e=document.getElementById('errMsg');e.style.display=m?'block':'none';if(m)e.textContent=m;}
 
@@ -733,7 +733,7 @@ function renderBowlerBookieMatrix(){
 // ─── Dropdowns ───────────────────────────────────────────────────
 function buildOptions(){
   const sBowls=settingsData['BOWLERS']||[];
-  const bowls=sBowls.length?sBowls:[...new Set(allBets.map(b=>b.bowler))].filter(Boolean).sort();
+  const bowls:sBowls.length?sBowls:[...new Set(allBets.map(b=>b.bowler))].filter(Boolean).sort();
   const bSel=document.getElementById('bowlerSelect'),prevB=bSel.value;
   bSel.innerHTML='<option value="All">All Bowlers</option>';
   bowls.forEach(b=>{const o=document.createElement('option');o.value=o.textContent=b;bSel.appendChild(o);});
@@ -750,7 +750,7 @@ function buildOptions(){
   const sSports=settingsData['SPORTS']||[];
   const sports=sSports.length?sSports:[...new Set(allBets.map(b=>b.sport))].filter(Boolean).sort();
   const spDrop=document.getElementById('sportDropdown');
-  if(spDrop){spDrop.innerHTML='';const mkI=(lbl,val)=>{const el=document.createElement('label');el.className='sport-check-item';const cb=document.createElement('input');cb.type='checkbox';cb.checked=(val==='All'?sportFilter.size===0:sportFilter.has(val));cb.addEventListener('change',()=>toggleSport(val));el.appendChild(cb);el.appendChild(document.createTextNode(' '+lbl));spDrop.appendChild(el);};mkI('All Sports','All');sports.forEach(sp=>mkI(sp,sp));}
+  if(spDrop){spDrop.innerHTML='';const mkI=(lbl,val)=>{const el=document.createElement('label');el.className='sport-check-item';const cb=document.createElement('input');cb.type='checkbox';cb.checked=(val==='All'?sportFilter.size===0:sportFilter.has(val));cb.addEventListener('change',()=>toggleSport(val));el.appendChild(cb);el.appendChild(document.createTextNode(' '+lbl));spDrop.appendChild(el);};kkI('All Sports','All');sports.forEach(sp=>mkI(sp,sp));}
   updateSportBtn();
 
   const bookies=[...new Set(allBets.map(b=>b.bookie))].filter(Boolean).sort();
@@ -968,7 +968,7 @@ function setRecentPage(p){recentPage=p;buildRecentFeed(allBets,allHyp);}
 
 // ─── Formatters ───────────────────────────────────────────────────
 function roiCls(r){return r>2?'roi-pos':r<-2?'roi-neg':'roi-neu';}
-function fmt$(n){if(isNaN(n))return'—';const r=Math.round(n*100)/100;if(r===0)return'$0.00';const a=Math.abr(r);const s=a>=1000?'$'+a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'$'+a.toFixed(2);return r<0?'-'+s:s;}
+function fmt$(n){if(isNaN(n))return'—';const r=Math.round(n*100)/100;if(r===0)return'$0.00';const a=Math.abs(r);const s=a>=1000?'$'+a.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):'$'+a.toFixed(2);return r<0?'-'+s:s;}
 function fmtP(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'%';}
 function fmtU(n){if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(2)+'u';}
 function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
@@ -978,7 +978,7 @@ function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classL
 function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
 function pad2(n){return String(n).padStart(2,'0');}
 function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
-function customRangeText(){return(&ustomStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function customRangeText(){return(lestomStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
 function setPeriodCustom(btn){
   document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
