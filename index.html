@@ -130,7 +130,7 @@ nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;h
 .tbl-title{font-size:12px;font-weight:500;color:var(--dim);margin-bottom:12px;}
 .tbl-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;}
-thead th{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;padding:6px 12px;text-align:right;border-bottom:1px solid var(--border);white-space:nowraw;font-weight:500;}
+thead th{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;padding:6px 12px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap;font-weight:500;}
 thead th:first-child{text-align:left;}
 tbody tr{border-bottom:1px solid #1a2235;}
 tbody tr:last-child{border-bottom:none;}
@@ -733,7 +733,7 @@ function renderBowlerBookieMatrix(){
 // ─── Dropdowns ───────────────────────────────────────────────────
 function buildOptions(){
   const sBowls=settingsData['BOWLERS']||[];
-  const bowls:sBowls.length?sBowls:[...new Set(allBets.map(b=>b.bowler))].filter(Boolean).sort();
+  const bowls=sBowls.length?sBowls:[...new Set(allBets.map(b=>b.bowler))].filter(Boolean).sort();
   const bSel=document.getElementById('bowlerSelect'),prevB=bSel.value;
   bSel.innerHTML='<option value="All">All Bowlers</option>';
   bowls.forEach(b=>{const o=document.createElement('option');o.value=o.textContent=b;bSel.appendChild(o);});
@@ -750,7 +750,7 @@ function buildOptions(){
   const sSports=settingsData['SPORTS']||[];
   const sports=sSports.length?sSports:[...new Set(allBets.map(b=>b.sport))].filter(Boolean).sort();
   const spDrop=document.getElementById('sportDropdown');
-  if(spDrop){spDrop.innerHTML='';const mkI=(lbl,val)=>{const el=document.createElement('label');el.className='sport-check-item';const cb=document.createElement('input');cb.type='checkbox';cb.checked=(val==='All'?sportFilter.size===0:sportFilter.has(val));cb.addEventListener('change',()=>toggleSport(val));el.appendChild(cb);el.appendChild(document.createTextNode(' '+lbl));spDrop.appendChild(el);};kkI('All Sports','All');sports.forEach(sp=>mkI(sp,sp));}
+  if(spDrop){spDrop.innerHTML='';const mkI=(lbl,val)=>{const el=document.createElement('label');el.className='sport-check-item';const cb=document.createElement('input');cb.type='checkbox';cb.checked=(val==='All'?sportFilter.size===0:sportFilter.has(val));cb.addEventListener('change',()=>toggleSport(val));el.appendChild(cb);el.appendChild(document.createTextNode(' '+lbl));spDrop.appendChild(el);};mkI('All Sports','All');sports.forEach(sp=>mkI(sp,sp));}
   updateSportBtn();
 
   const bookies=[...new Set(allBets.map(b=>b.bookie))].filter(Boolean).sort();
@@ -839,7 +839,7 @@ function drawChart(bets,hyp){
   const vals=pts.map(p=>p.v),minV=Math.min(0,...vals),maxV=Math.max(0,...vals),rng=maxV-minV||1;
   const minD=pts[0].d.getTime(),maxD=pts[pts.length-1].d.getTime(),dRng=maxD-minD||1;
   const px=d=>PL+((d.getTime()-minD)/dRng)*cW,py=v=>PT+cH-((v-minV)/rng)*cH;
-  const defs=se('defs');defs.innerHTML<`<linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3fb950" stop-opacity=".35"/><stop offset="100%" stop-color="#3fb950" stop-opacity=".02"/></linearGradient>`;svg.appendChild(defs);
+  const defs=se('defs');defs.innerHTML=`<linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3fb950" stop-opacity=".35"/><stop offset="100%" stop-color="#3fb950" stop-opacity=".02"/></linearGradient>`;svg.appendChild(defs);
   for(let i=0;i<=4;i++){const v=minV+(rng/4)*i,y=py(v);const gl=se('line');sa(gl,{x1:PL,x2:W-PR,y1:y,y2:y,stroke:'#1a2235','stroke-width':1});svg.appendChild(gl);const lb=se('text');sa(lb,{x:PL-6,y:y+4,fill:'#6b7280','font-size':9,'text-anchor':'end'});lb.textContent=Math.abs(v)>=1000?'$'+(v/1000).toFixed(1)+'k':'$'+v.toFixed(0);svg.appendChild(lb);}
   function mkPath(pts){if(pts.length<2)return`M${px(pts[0].d)},${py(pts[0].v)}`;let d=`M${px(pts[0].d)},${py(pts[0].v)}`;for(let i=1;i<pts.length;i++){const p=pts[i-1],c=pts[i];const mx=(px(p.d)+px(c.d))/2;d+=` C${mx},${py(p.v)} ${mx},${py(c.v)} ${px(c.d)},${py(c.v)}`;}return d;}
   const lp=mkPath(pts),ap=lp+` L${px(pts[pts.length-1].d)},${py(0)} L${px(pts[0].d)},${py(0)} Z`;
@@ -881,7 +881,7 @@ function buildTable(bets,hyp){
     .sort((a,b)=>b.s.turnover-a.s.turnover)
     .forEach(({name,s})=>{
       const tr=document.createElement('tr');
-      tr.innerHTML<`<td>${name}</td><td class="c-purple">${fmt$(s.turnover)}</td><td>${s.bets}</td><td>${s.avgOdds>1?s.avgOdds.toFixed(2):'—'}</td><td><span class="roi-badge ${roiCls(s.roi)}">${fmtP(s.roi)}</span></td><td class="${s.units>=0?'c-green':'c-red'}">${fmtU(s.units)}</td><td class="${s.profit>=0?'c-green':'c-red'}">${fmt$(s.profit)}</td><td class="${s.ppb>=0?'c-green':'c-red'}">${fmt$(s.ppb)}</td><td>${fmtP(s.strike)}</td>`;
+      tr.innerHTML=`<td>${name}</td><td class="c-purple">${fmt$(s.turnover)}</td><td>${s.bets}</td><td>${s.avgOdds>1?s.avgOdds.toFixed(2):'—'}</td><td><span class="roi-badge ${roiCls(s.roi)}">${fmtP(s.roi)}</span></td><td class="${s.units>=0?'c-green':'c-red'}">${fmtU(s.units)}</td><td class="${s.profit>=0?'c-green':'c-red'}">${fmt$(s.profit)}</td><td class="${s.ppb>=0?'c-green':'c-red'}">${fmt$(s.ppb)}</td><td>${fmtP(s.strike)}</td>`;
       tbody.appendChild(tr);
     });
   if(hyp.length>0){
@@ -978,7 +978,7 @@ function colorEl(id,v){const e=document.getElementById(id);if(!e)return;e.classL
 function setPeriod(d,btn){period=d;recentPage=0;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('customRange').classList.remove('active');render();}
 function pad2(n){return String(n).padStart(2,'0');}
 function toInputDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
-function customRangeText(){return(lestomStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
+function customRangeText(){return(customStart&&customEnd)?fmtDateShort(customStart)+' – '+fmtDateShort(customEnd):'CUSTOM';}
 function setPeriodCustom(btn){
   document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
